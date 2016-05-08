@@ -1,0 +1,13 @@
+<h1>Dummy aplikacija</h1>
+<div ng-show="authenticated">
+    <p>Dobro došli na ISSS Dummy app. Ova aplikacija služi kako bi se demonstrirao razvoj modula za ISSS v5 a.k.a 
+    Zamger v5.</p>
+    <p>Da biste napravili vaš modul, samo kopirajte ovu aplikaciju i nemojte zaboraviti napraviti detaljan rename svih
+    fajlova i foldera, klasa, paketa, HTML i JS koda, pom.xml, application.properties.</p>
+    <p>Za rad je potrebno da je pokrenuta i dostupna aplikacija <b>id</b> koja je opisana u dokumentu Arhitektura 
+    sistema, poglavlje Backbone. Za sada ovo je samo stub koji podržava OAuth2 autentikaciju jednog hardcodiranog korisnika
+    kako biste mogli testirati vaš modul.</p>
+</div>
+<div  ng-show="!authenticated">
+    <p>Niste prijavljeni. Kliknite na dugme &quot;login&quot; za ulaz</p>
+</div>

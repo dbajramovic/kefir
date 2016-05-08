@@ -1,0 +1,21 @@
+<table class="table movietable">
+  <tr>
+    <td><h3>Details for {{student.lastName}} {{student.firstName}} ({{student.jmbag}})</h3></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>Last name</td>
+    <td>{{student.lastName}}</td>
+  </tr>
+  <tr>
+    <td>First name</td>
+    <td>{{student.firstName}}</td>
+  </tr>
+  <tr>
+    <td>JMBAG</td>
+    <td>{{student.jmbag}}</td>
+  </tr>
+</table>
+<div>
+  <a class="btn btn-primary" ui-sref="editStudent({id:student._id})">Edit</a>
+</div>

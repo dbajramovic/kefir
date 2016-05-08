@@ -1,0 +1,25 @@
+<table class="table movietable">
+  <tr>
+    <td><h3>Details for {{event.name}}</h3></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>Name</td>
+    <td>{{event.name}}</td>
+  </tr>
+  <tr>
+    <td>Type</td>
+    <td>{{event.type}}</td>
+  </tr>
+  <tr>
+    <td>Start time:</td>
+    <td>{{event.begindate | date: 'medium' }}</td>
+  </tr>
+  <tr>
+    <td>End time:</td>
+    <td>{{event.enddate | date: 'medium' }}</td>
+  </tr>
+</table>
+<div>
+  <a class="btn btn-primary" ui-sref="editevent({id:event._id})">Edit</a>
+</div>
