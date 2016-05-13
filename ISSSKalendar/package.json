@@ -1,0 +1,24 @@
+{
+  "name": "issskalendar",
+  "version": "1.0.0",
+  "description": "spring-based calendar app",
+  "main": "dummy.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dbajramovic/kefir.git"
+  },
+  "keywords": [
+    "calendar",
+    "spring",
+    "kefir"
+  ],
+  "author": "dbajramovic",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dbajramovic/kefir/issues"
+  },
+  "homepage": "https://github.com/dbajramovic/kefir#readme"
+}

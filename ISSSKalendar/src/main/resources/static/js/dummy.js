@@ -1,4 +1,4 @@
-var app = angular.module('dummy', [ 'ngRoute', 'ngResource', 'ui.bootstrap' ]);
+var app = angular.module('dummy', [ 'ngRoute', 'ngResource', 'mwl.calendar', 'ui.bootstrap' ]);
 
 app.config(function($routeProvider) {
 
@@ -30,6 +30,9 @@ app.config(function($routeProvider) {
 		})
 	.when('/events/:id/edit', {
 		templateUrl: 'partials/event-edit.html', controller: 'EventEditCtrl'
+		})
+		.when('/:id/calendar', {
+		templateUrl: 'partials/calendar-full.html', controller: 'CalendarCtrl'
 		})
 	.otherwise('/');
 
@@ -392,4 +395,57 @@ app.controller('EventListCtrl',  function($scope, $window, EventsService, EventS
   $scope.event = EventService.show({id: $routeParams.id});
 
 });
+app.controller('CalendarCtrl',  function($scope, $window, $log, StudentService, EventsService, EventService, $location) {
+    $scope.calendarView = 'month';
+    $scope.calendarDate = new Date();
+    $scope.CalendarEvents = [];
+    EventsService.query().$promise.then(successOnGetEvent, errorOnGetEvent);
+    var i = 0;
+    function successOnGetEvent(response) {
+    	$scope.events = response;
+        angular.forEach($scope.events, function(value, key) {
+        	//$log.debug($scope.events[0]);
+    		  var calevent =  {
+    			  title: $scope.events[i].name,
+    			  type: 'warning',
+    			  startsAt: new Date($scope.events[i].begindate),
+    			  endsAt: new Date($scope.events[i].enddate),
+    			  draggable: false,
+    			  resizable: false
+    			}
+    		  $scope.CalendarEvents.push(calevent);
+    		  i++;
+    		});
+ };
+    function errorOnGetEvent(response) {
+        console.log(response)
+    }; 	       
+	
+    $scope.isCellOpen = true;
 
+    $scope.eventClicked = function(event) {
+    	var i = event.$id;
+    	$location.path('/events/'+i+ '/view');
+    };
+
+    $scope.eventEdited = function(event) {
+    	var i = event.$id;
+    	$location.path('/events/'+i+ '/edit')
+    };
+
+    $scope.eventDeleted = function(event) {
+    	var i = event.$id;
+    	$location.path('/events/'+i+ '/delete')
+    };
+
+    $scope.eventTimesChanged = function(event) {
+      alert.show('Dropped or resized', event);
+    };
+
+    $scope.toggle = function($event, field, event) {
+      $event.preventDefault();
+      $event.stopPropagation();
+      event[field] = !event[field];
+    };
+
+});
