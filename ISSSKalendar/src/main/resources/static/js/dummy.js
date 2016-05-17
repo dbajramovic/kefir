@@ -133,7 +133,8 @@ app.factory('StudevesService', function($resource) {
 	      create: { method: 'POST' }
 	  });
 	});
-//app.controller('StudentListCtrl',  function($scope, $state, popupService, $window, StudentService) {
+// app.controller('StudentListCtrl', function($scope, $state, popupService,
+// $window, StudentService) {
 app.controller('StudentListCtrl',  function($scope, $window, StudentsService, StudentService, $location) {
 	  var qry = StudentsService.query();
 	  $scope.students = qry; 
@@ -232,27 +233,57 @@ app.controller('EventListCtrl',  function($scope, $window, EventsService, EventS
   $scope.event = EventService.show({id: $routeParams.id});
   
 }).controller('EventCreateCtrl', function($scope, EventsService, StudevesService, $location,$log) {
-  // callback for ng-click 'createNewevent':
+	$scope.items = [
+	                  'Exam',
+	                  'Tutorial',
+	                  'Lecture',
+	                  'Else'
+	                ];
+ $scope.selectedType = 'Else';
+	                $scope.status = {
+	                  isopen: false
+	                };
+
+	                $scope.toggled = function(open) {
+	                  
+	                };
+
+	                $scope.toggleDropdown = function($event) {
+	                  $event.preventDefault();
+	                  $event.stopPropagation();
+	                  $scope.status.isopen = !$scope.status.isopen;
+	                };
+
+	                $scope.appendToEl = angular.element(document.querySelector('#dropdown-long-content'));
+	                $scope.typeChosen = function(choice){ 
+	                	$scope.selectedType = choice;
+	                };
+	                // callback for ng-click 'createNewevent':
   $scope.createNewEvent = function () {
 	  $scope.event.begindate.setHours($scope.beginhour.getHours());
 	  $scope.event.begindate.setMinutes($scope.beginhour.getMinutes());
       $scope.event.enddate.setHours($scope.endhour.getHours());
       $scope.event.enddate.setMinutes($scope.endhour.getMinutes());
       $scope.event.ended = false;
-      $scope.event.type = 0;
-      $log.debug($scope.eventtype);
+      $scope.event.typeofevent = $scope.selectedType;
       if($scope.event.begindate < $scope.event.enddate) { 
     		EventsService.create($scope.event).$promise.then(successOnGetEvent, errorOnGetEvent);
     		 function successOnGetEvent(eventid) {
-    			    var size_of_json = Object.keys(eventid).length - 2; //promise and resolve are taken out
+    			    var size_of_json = Object.keys(eventid).length - 2; // promise
+																		// and
+																		// resolve
+																		// are
+																		// taken
+																		// out
     	            $scope.eventid = "";
     	            var i = 0;
-    	            //Because the json returns the id in a array, I had to merge it back together
+    	            // Because the json returns the id in a array, I had to
+					// merge it back together
     	            while(size_of_json > i) { 
     	            	$scope.eventid += angular.fromJson(eventid)[i];
     	            	i++;
     	            }
-    	          //placeholder id
+    	          // placeholder id
     	    	    $scope.studentid = 1;
     	    	    $scope.studeve = { 
     	    	    		eventid: $scope.eventid,
@@ -266,27 +297,6 @@ app.controller('EventListCtrl',  function($scope, $window, EventsService, EventS
     	        }; 	       
       }
   }
-  $scope.items = [
-                  'Exam',
-                  'Tutorial',
-                  'Else'
-                ];
-
-                $scope.status = {
-                  isopen: false
-                };
-
-                $scope.toggled = function(open) {
-                  $log.log('Dropdown is now: ', open);
-                };
-
-                $scope.toggleDropdown = function($event) {
-                  $event.preventDefault();
-                  $event.stopPropagation();
-                  $scope.status.isopen = !$scope.status.isopen;
-                };
-
-                $scope.appendToEl = angular.element(document.querySelector('#dropdown-long-content'));
   $scope.today = function() {
 	    $scope.dt = new Date();
 	  };
@@ -379,7 +389,122 @@ app.controller('EventListCtrl',  function($scope, $window, EventsService, EventS
 	    $scope.mytime = null;
 	  };
 }).controller('EventEditCtrl', function($scope, $routeParams, EventService, $location, $log) {
+	$scope.items = [
+	                  'Exam',
+	                  'Tutorial',
+	                  'Lecture',
+	                  'Else'
+	                ];
+$scope.selectedType = 'Else';
+	                $scope.status = {
+	                  isopen: false
+	                };
 
+	                $scope.toggled = function(open) {
+	                  
+	                };
+
+	                $scope.toggleDropdown = function($event) {
+	                  $event.preventDefault();
+	                  $event.stopPropagation();
+	                  $scope.status.isopen = !$scope.status.isopen;
+	                };
+
+	                $scope.appendToEl = angular.element(document.querySelector('#dropdown-long-content'));
+	                $scope.typeChosen = function(choice){ 
+	                	$scope.selectedType = choice;
+	                };
+	                $scope.today = function() {
+	            	    $scope.dt = new Date();
+	            	  };
+	            	  $scope.today();
+
+	            	  $scope.clear = function() {
+	            	    $scope.dt = null;
+	            	  };
+
+	            	  $scope.options = {
+	            	    customClass: getDayClass,
+	            	    minDate: new Date(),
+	            	    showWeeks: true
+	            	  };
+
+	            	  // Disable weekend selection
+	            	  function disabled(data) {
+	            	    var date = data.date,
+	            	      mode = data.mode;
+	            	    return mode === 'day' && (date.getDay() === 0 || date.getDay() === 6);
+	            	  }
+
+	            	  $scope.toggleMin = function() {
+	            	    $scope.options.minDate = $scope.options.minDate ? null : new Date();
+	            	  };
+
+	            	  $scope.toggleMin();
+
+	            	  $scope.setDate = function(year, month, day) {
+	            	    $scope.dt = new Date(year, month, day);
+	            	  };
+
+	            	  var tomorrow = new Date();
+	            	  tomorrow.setDate(tomorrow.getDate() + 1);
+	            	  var afterTomorrow = new Date(tomorrow);
+	            	  afterTomorrow.setDate(tomorrow.getDate() + 1);
+	            	  $scope.events = [
+	            	    {
+	            	      date: tomorrow,
+	            	      status: 'full'
+	            	    },
+	            	    {
+	            	      date: afterTomorrow,
+	            	      status: 'partially'
+	            	    }
+	            	  ];
+
+	            	  function getDayClass(data) {
+	            	    var date = data.date,
+	            	      mode = data.mode;
+	            	    if (mode === 'day') {
+	            	      var dayToCheck = new Date(date).setHours(0,0,0,0);
+
+	            	      for (var i = 0; i < $scope.events.length; i++) {
+	            	        var currentDay = new Date($scope.events[i].date).setHours(0,0,0,0);
+
+	            	        if (dayToCheck === currentDay) {
+	            	          return $scope.events[i].status;
+	            	        }
+	            	      }
+	            	    }
+
+	            	    return '';
+	            	  }
+	            	  $scope.hstep = 1;
+	            	  $scope.mstep = 15;
+
+	            	  $scope.options = {
+	            	    hstep: [1, 2, 3],
+	            	    mstep: [1, 5, 10, 15, 25, 30]
+	            	  };
+
+	            	  $scope.ismeridian = true;
+	            	  $scope.toggleMode = function() {
+	            	    $scope.ismeridian = ! $scope.ismeridian;
+	            	  };
+
+	            	  $scope.update = function() {
+	            	    var d = new Date();
+	            	    d.setHours( 14 );
+	            	    d.setMinutes( 0 );
+	            	    $scope.mytime = d;
+	            	  };
+
+	            	  $scope.changed = function () {
+	            	    
+	            	  };
+
+	            	  $scope.clear = function() {
+	            	    $scope.mytime = null;
+	            	  };
   // callback for ng-click 'updateevent':
   $scope.updateevent = function () {
 	
@@ -404,10 +529,16 @@ app.controller('CalendarCtrl',  function($scope, $window, $log, StudentService, 
     function successOnGetEvent(response) {
     	$scope.events = response;
         angular.forEach($scope.events, function(value, key) {
-        	//$log.debug($scope.events[0]);
+        	 //$log.debug($scope.events[0]._links.event.href);
+        	  var typeOfEvent = 'info';
+        	  $log.debug($scope.events[i].typeofevent);
+        	  if($scope.events[i].typeofevent === 'Exam') typeOfEvent = 'warning';
+        	  if($scope.events[i].typeofevent === 'Tutorial') typeOfEvent = 'important';
+        	  if($scope.events[i].typeofevent === 'Lecture') typeOfEvent = 'inverse';
     		  var calevent =  {
+    			  link: $scope.events[i]._links.event.href,
     			  title: $scope.events[i].name,
-    			  type: 'warning',
+    			  type: typeOfEvent,
     			  startsAt: new Date($scope.events[i].begindate),
     			  endsAt: new Date($scope.events[i].enddate),
     			  draggable: false,
@@ -424,18 +555,15 @@ app.controller('CalendarCtrl',  function($scope, $window, $log, StudentService, 
     $scope.isCellOpen = true;
 
     $scope.eventClicked = function(event) {
-    	var i = event.$id;
-    	$location.path('/events/'+i+ '/view');
+    	$location.path('/events/'+event.link.split("/")[5]+ '/view');
     };
 
     $scope.eventEdited = function(event) {
-    	var i = event.$id;
-    	$location.path('/events/'+i+ '/edit')
+    	$location.path('/events/'+event.link.split("/")[5]+ '/edit')
     };
 
     $scope.eventDeleted = function(event) {
-    	var i = event.$id;
-    	$location.path('/events/'+i+ '/delete')
+    	$location.path('/events/'+event.link.split("/")[5]+ '/delete')
     };
 
     $scope.eventTimesChanged = function(event) {

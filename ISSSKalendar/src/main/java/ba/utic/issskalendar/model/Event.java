@@ -16,6 +16,8 @@ public class Event {
 	private Timestamp begindate;
 	private Timestamp enddate;
 	private Boolean ended;
+	private String location;
+	private String typeofevent;
 	public long getCreatorid() {
 		return creatorid;
 	}
@@ -45,5 +47,17 @@ public class Event {
 	}
 	public void setEnded(Boolean ended) {
 		this.ended = ended;
+	}
+	public String getLocation() {
+		return location;
+	}
+	public void setLocation(String location) {
+		this.location = location;
+	}
+	public String getTypeofevent() {
+		return typeofevent;
+	}
+	public void setTypeofevent(String type) {
+		this.typeofevent = type;
 	}
 }
