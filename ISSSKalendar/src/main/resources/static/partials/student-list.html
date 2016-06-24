@@ -1,0 +1,22 @@
+<div class="span6">
+	<h3>Studenti</h3>
+	<table class="table table-striped table-condensed">
+		<thead>
+			<tr>
+				<th style="min-width: 80px;">Prezime</th>
+				<th style="min-width: 80px;">Ime</th>
+				<th style="width: 20px;"></th>
+				<th style="width: 20px;"></th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr ng-repeat="student in students">
+				<td>{{student.lastName}}</td>
+				<td>{{student.firstName}}</td>
+				<td><a ng-click="editStudent(student.id)" class="btn btn-small btn-primary">Edit</a></td>
+				<td><a ng-click="deleteStudent(student.id)" class="btn btn-small btn-danger">Delete</a></td>
+			</tr>
+	</table>
+
+	<a ng-click="createNewStudent()" class="btn btn-small">Dodaj studenta</a>
+</div>
