@@ -17,7 +17,7 @@ integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkz
 			<li ng-class="{active:nav.tab('home')}"><a href="#/">home</a></li>
 			<li ng-show="authenticated" ng-class="{active:nav.tab('students')}"><a href="#/students">studenti</a></li>
 			<li ng-show="authenticated" ng-class="{active:nav.tab('events')}"><a href="#/events">Events</a></li>
-			<li ng-show="authenticated" ng-class="{active:nav.tab('events')}"><a href="#/:id/calendar/">Calendar</a></li>
+			<li ng-show="authenticated" ng-class="{active:nav.tab('events')}"><a href="#/1/calendar/">Calendar</a></li>
 			<li ng-show="!authenticated" ng-class="{active:nav.tab('navigation')}"><a href="login">login</a></li>
 			<li ng-show="authenticated"><a href="" ng-click="nav.logout()">logout</a></li>
 		</ul>

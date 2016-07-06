@@ -31,11 +31,11 @@ app.config(function($routeProvider) {
 	.when('/events/:id/edit', {
 		templateUrl: 'partials/event-edit.html', controller: 'EventEditCtrl'
 		})
-		.when('/:id/calendar', {
+	.when('/:id/calendar', {
 		templateUrl: 'partials/calendar-full.html', controller: 'CalendarCtrl'
 		})
-		.when('/:eventid/addToEvent', {
-		templateUrl: 'partials/addToEvent-full.html', controller: 'CalendarCtrl'
+	.when('/:eventid/addToEvent', {
+		templateUrl: 'partials/addToEvent.html', controller: 'EventEditCtrl'
 		})
 	.otherwise('/');
 
