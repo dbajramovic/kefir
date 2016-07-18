@@ -17,11 +17,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import ba.utic.issskalendar.model.Student;
 import ba.utic.issskalendar.model.Event;
 import ba.utic.issskalendar.model.Studeve;
+
 @RepositoryRestResource(collectionResourceRel = "studeves", path = "studeves")
-public interface StudeveRepository extends JpaRepository<Studeve, Long>  {
+public interface StudeveRepository extends JpaRepository<Studeve, Long> {
 	List<Student> findStudentByEventid(@Param("eventid") long eventid);
-	@RequestMapping(value="/studentid/{a}", method= RequestMethod.GET)
+
+	@RequestMapping(value = "/studentid/{a}", method = RequestMethod.GET)
 	@ResponseBody
-	@Query(value ="SELECT e.id,e.begindate,e.creatorid,e.enddate,e.ended,e.location,e.name,e.typeofevent from Event e, Studeve se where e.id = se.eventid AND se.studentid = :studentid")
+	@Query(value = "SELECT e.id,e.begindate,e.creatorid,e.enddate,e.ended,e.location,e.name,e.typeofevent from Event e, Studeve se where e.id = se.eventid AND se.studentid = :studentid")
 	List<Object[]> findEventByStudentid(@Param("studentid") long studentid);
 }

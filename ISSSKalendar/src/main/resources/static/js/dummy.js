@@ -1,4 +1,4 @@
-var app = angular.module('dummy', [ 'ngRoute', 'ngResource', 'mwl.calendar', 'ui.bootstrap' ]);
+var app = angular.module('dummy', [ 'ngRoute', 'ngResource', 'ngCookies','mwl.calendar', 'ui.bootstrap', 'angularjs-dropdown-multiselect' ]);
 
 app.config(function($routeProvider) {
 
@@ -224,6 +224,10 @@ app.controller('EventListCtrl',  function($scope, $window, EventsService, EventS
         $location.path('/events/new');
     };
 	  
+    $scope.addStudentstoEvent = function(eventId) {
+        $location.path('/'+eventId+'/addToEvent');
+    };
+    
 }).controller('EventViewCtrl', function($scope, $routeParams, EventService, $location) {
 
   // callback for ng-click 'updateevent':
@@ -395,25 +399,43 @@ app.controller('EventListCtrl',  function($scope, $window, EventsService, EventS
 	  $scope.clear = function() {
 	    $scope.mytime = null;
 	  };
-}).controller('EventEditCtrl', function($scope, $routeParams, EventService,StudentsService, $location, $log) {
+}).controller('EventEditCtrl', function($scope, $routeParams,$http, EventService,StudentsService,StudevesService, $location, $log, $cookies) {
+	$scope.Success = true;
 	$scope.listOfStudentsToAddToEvent = [];
+	   $scope.studentsmodel = [];
+	   $scope.studentscustomTexts = {buttonDefaultText: 'Select students to add:' };
+	   $scope.studentssettings = {displayProp: 'lastName', enableSearch: true ,scrollable: true , scrollableHeight: '500px'};
 	$scope.getStudents = function () {
-       $scope.students = StudentsService.query();
+       StudentsService.query().$promise.then(S,E);
+       function S(response)  {
+    	   $scope.students = response;
+       };
+       function E(response)  {
+    	   $log.debug(response);
+       };
       };
       $scope.addToListofStudents = function(selectedStudent) {
-     	 $scope.listOfStudentsToAddToEvent.push(selectedStudent);
+    	  $log.debug($scope.studentsmodel);
       };
      $scope.addToEvent = function() {
-    	 $(document).ready(function() {
-    		    $("button").click(function(){
-    		        var countries = [];
-    		        $.each($(".country option:selected"), function(){            
-    		            countries.push($(this).val());
-    		        });
-    		        alert("You have selected the country - " + countries.join(", "));
-    		    });
-    		});
-     };
+    	 angular.forEach($scope.studentsmodel, function(value, key) {
+    		 $scope.listOfStudentsToAddToEvent.push($scope.students[value.id-1]);
+   		});
+    	 angular.forEach($scope.listOfStudentsToAddToEvent, function(value, key) {
+    		 $scope.studeve = { 
+	    	    		eventid: $routeParams.eventid,
+	    	    		studentid: value.id
+	    	    };
+    		 $http.defaults.headers.post['X-CSRFToken'] = $cookies.get('XSRF-TOKEN');
+    		 var data = $scope.studeve;
+    		 $http.post('/resource/studeves',data).then(function successCallback(response) {
+    			    $scope.Success = true;
+    			    $log.debug(response);
+    			  }, function errorCallback(response) {
+    			    $log.debug(response);
+    			  });
+   		});
+    };
 	$scope.items = [
 	                  'Exam',
 	                  'Tutorial',
