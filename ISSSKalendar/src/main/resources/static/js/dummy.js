@@ -209,7 +209,7 @@ app.controller('EventListCtrl',  function($scope, $window, EventsService, EventS
     $scope.editEvent = function (eventId) {
         $location.path('/events/' + eventId + "/edit");
     };
-    //callback for ng-click 'addStudentstoEvent'
+    // callback for ng-click 'addStudentstoEvent'
     $scope.editEvent = function (eventId) {
         $location.path(eventId + '/addToEvent');
     };
@@ -395,7 +395,25 @@ app.controller('EventListCtrl',  function($scope, $window, EventsService, EventS
 	  $scope.clear = function() {
 	    $scope.mytime = null;
 	  };
-}).controller('EventEditCtrl', function($scope, $routeParams, EventService, $location, $log) {
+}).controller('EventEditCtrl', function($scope, $routeParams, EventService,StudentsService, $location, $log) {
+	$scope.listOfStudentsToAddToEvent = [];
+	$scope.getStudents = function () {
+       $scope.students = StudentsService.query();
+      };
+      $scope.addToListofStudents = function(selectedStudent) {
+     	 $scope.listOfStudentsToAddToEvent.push(selectedStudent);
+      };
+     $scope.addToEvent = function() {
+    	 $(document).ready(function() {
+    		    $("button").click(function(){
+    		        var countries = [];
+    		        $.each($(".country option:selected"), function(){            
+    		            countries.push($(this).val());
+    		        });
+    		        alert("You have selected the country - " + countries.join(", "));
+    		    });
+    		});
+     };
 	$scope.items = [
 	                  'Exam',
 	                  'Tutorial',
@@ -538,7 +556,7 @@ app.controller('CalendarCtrl',  function($scope, $window, $log, StudentService, 
         angular.forEach($scope.events, function(value, key) {
         	  $log.debug($scope.events[i]);
         	  var typeOfEvent = 'info';
-        	  //$log.debug($scope.events[i].studeeve[0]);
+        	  // $log.debug($scope.events[i].studeeve[0]);
         	  if($scope.events[i].typeofevent === 'Exam') typeOfEvent = 'warning';
         	  if($scope.events[i].typeofevent === 'Tutorial') typeOfEvent = 'important';
         	  if($scope.events[i].typeofevent === 'Lecture') typeOfEvent = 'inverse';
@@ -558,14 +576,14 @@ app.controller('CalendarCtrl',  function($scope, $window, $log, StudentService, 
     function errorOnGetStudEve(response) {
         console.log(response)
     }; 	
-   //EventsService.query().$promise.then(successOnGetEvent, errorOnGetEvent);
+   // EventsService.query().$promise.then(successOnGetEvent, errorOnGetEvent);
     var i = 0;
     function successOnGetEvent(response) {
     	$scope.events = response;
         angular.forEach($scope.events, function(value, key) {
         	  $log.debug($scope.events[0]);
         	  var typeOfEvent = 'info';
-        	  //$log.debug($scope.events[i].studeeve[0]);
+        	  // $log.debug($scope.events[i].studeeve[0]);
         	  if($scope.events[i].typeofevent === 'Exam') typeOfEvent = 'warning';
         	  if($scope.events[i].typeofevent === 'Tutorial') typeOfEvent = 'important';
         	  if($scope.events[i].typeofevent === 'Lecture') typeOfEvent = 'inverse';
