@@ -1,0 +1,55 @@
+@CHARSET "UTF-8";
+
+.topbar {
+	background-color: black;
+	color: white;
+	width: 100%;
+}
+
+body {
+	background-image: url(../img/bg-silver.jpg);
+}
+
+.footer {
+	right: 0;
+	bottom: 0;
+	left: 0;
+	padding: 1rem;
+	background-color: black;
+	color: white;
+	font-family: 'Oswald', sans-serif;
+}
+
+.footer-logo {
+	width: 100px;
+	height: 100px;
+	border: 5px;
+	margin: 10px;
+}
+
+.nav-pills {
+	font-family: 'Montserrat', sans-serif;
+	color: white;
+}
+
+.nav-pills.li.a {
+	border-radius: 0 !important;
+}
+
+.title {
+	font-family: 'Montserrat', sans-serif;
+	text-shadow: 2px 2px #d6d6c2;
+}
+
+.body-text {
+	font-family: 'Ubuntu', sans-serif;
+}
+
+.black-thick-bar {
+	color: black;
+	border-wifth: thick;
+}
+
+td {
+	vertical-align: middle;
+}

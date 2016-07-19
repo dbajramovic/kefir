@@ -1,9 +1,9 @@
-var app = angular.module('dummy', [ 'ngRoute', 'ngResource', 'ngCookies','mwl.calendar', 'ui.bootstrap', 'angularjs-dropdown-multiselect' ]);
+var app = angular.module('dummy', [ 'ngRoute', 'ngResource', 'ngCookies','mwl.calendar', 'ui.bootstrap', 'angularjs-dropdown-multiselect','feeds' ]);
 
 app.config(function($routeProvider) {
 
 	$routeProvider.when('/', {
-		templateUrl : 'partials/home.html',
+		templateUrl : 'partials/home1.html',
 		controller : 'home',
 		controllerAs : 'controller'
 	})

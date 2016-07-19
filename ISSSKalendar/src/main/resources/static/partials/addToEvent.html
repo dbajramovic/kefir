@@ -1,31 +1,8 @@
 <div class="container-fluid" ng-controller="EventEditCtrl"
 	data-ng-init="getStudents()">
 	<form novalidate="novalidate" class="form-horizontal">
-		<h1>Add to Event #{{routeParams.eventid}}:</h1>
-		<!-- 		<div class="col-md-5"> -->
-		<!-- 			<div class="input group"> -->
-		<!-- 				<input type="search" class="form-control"></input> -->
-		<!-- 			</div> -->
-		<!-- 			<br> <select multiple="multiple" class="form-control input-lg" -->
-		<!-- 				style="height: 500px" id="selectStudents"> -->
-		<!-- 				<option ng-repeat="student in students" ng-model="student" -->
-		<!-- 					ng-click="addToListofStudents(student)">{{student.firstName}} -->
-		<!-- 					{{student.lastName}}</option> -->
-		<!-- 			</select> -->
-		<!-- 		</div> -->
-		<!-- 		<div class="col-md-5"> -->
-		<!-- 			<div class="input group"> -->
-		<!-- 				<input type="search" class="form-control"></input> -->
-		<!-- 			</div> -->
-		<!-- 			<br> <select multiple class="form-control input-lg" -->
-		<!-- 				style="height: 500px"> -->
-		<!-- 				<option>GRUPA 1</option> -->
-		<!-- 				<option>GRUPA 2</option> -->
-		<!-- 				<option>GRUPA 3</option> -->
-		<!-- 				<option>GRUPA 4</option> -->
-		<!-- 				<option>GRUPA 5</option> -->
-		<!-- 			</select> -->
-		<!-- 		</div> -->
+		<h1 class="title">Add to Event #{{routeParams.eventid}}:</h1>
+		<hr>
 		<div class="col-md-4">
 			<div ng-dropdown-multiselect="" options="students"
 				selected-model="studentsmodel" extra-settings="studentssettings"

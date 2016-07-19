@@ -1,13 +1,35 @@
-<h1>Dummy aplikacija</h1>
-<div ng-show="authenticated">
-    <p>Dobro došli na ISSS Dummy app. Ova aplikacija služi kako bi se demonstrirao razvoj modula za ISSS v5 a.k.a 
-    Zamger v5.</p>
-    <p>Da biste napravili vaš modul, samo kopirajte ovu aplikaciju i nemojte zaboraviti napraviti detaljan rename svih
-    fajlova i foldera, klasa, paketa, HTML i JS koda, pom.xml, application.properties.</p>
-    <p>Za rad je potrebno da je pokrenuta i dostupna aplikacija <b>id</b> koja je opisana u dokumentu Arhitektura 
-    sistema, poglavlje Backbone. Za sada ovo je samo stub koji podržava OAuth2 autentikaciju jednog hardcodiranog korisnika
-    kako biste mogli testirati vaš modul.</p>
-</div>
-<div  ng-show="!authenticated">
-    <p>Niste prijavljeni. Kliknite na dugme &quot;login&quot; za ulaz</p>
+<div class="span6" ng-controller="EventListCtrl">
+	<h1 class="title">ISSS Calendar</h1>
+	<hr>
+	<div ng-show="authenticated">
+		<p>Welcome to your ISSS Calendar. Your events, and those that you
+			are added to are shown below. More features are going to be implemented soon.</p>
+	</div>
+	<div ng-show="!authenticated">
+		<p>Niste prijavljeni. Kliknite na dugme &quot;login&quot; za ulaz</p>
+	</div>
+	<div class="col-md-6">
+		<h3 class="title">Your upcoming events</h3>
+		<table class="table table-condensed">
+			<thead>
+				<tr>
+					<th style="min-width: 80px; centered">Naziv</th>
+					<th style="width: 20px;"></th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr ng-repeat="event in events">
+					<td class="body-text">{{event.name}}, Ends: {{event.enddate | date:'dd/MM/yyyy @ hh:mm' }}</td>
+					<td><a
+						ng-click="viewEvent(event._links.event.href.split('/')[5])"
+						class="btn btn-small btn-primary">View</a></td>
+				</tr>
+		</table>
+	</div>
+	<div class="col-md-6">
+		<h3 class="title">News</h3>
+		<feed summary="true"
+			url="http://www.klix.ba/rss/vijesti"
+			count="3" />
+	</div>
 </div>
