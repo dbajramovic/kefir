@@ -127,8 +127,8 @@ app.factory('StudeveService', function($resource) {
 	});
 
 app.factory('StudevesService', function($resource) {
-	  return $resource('/resource/studeve/:studentid', {}, {
-	      query: { method: 'GET', isArray: true, params: {studentid: '@studentid'},
+	  return $resource('/resource/studeve/:studentid/:pagenum', {}, {
+	      query: { method: 'GET', isArray: true, params: {studentid: '@studentid', pagenum: '@pagenum'},
 	          transformResponse: function(data) {
 	        	  return angular.fromJson(data);
 	             // return angular.fromJson(data)._embedded.studeves;
@@ -197,10 +197,40 @@ app.controller('StudentListCtrl',  function($scope, $window, StudentsService, St
     $scope.student = StudentService.show({id: $routeParams.id});
 
 });
-app.controller('EventListCtrl',  function($scope, $window, EventsService, EventService, $location) {
-	  var qry = EventsService.query();
-	  $scope.events = qry; 
-	  
+app.controller('EventListCtrl',  function($scope, $window, EventsService, StudevesService, EventService, $location,$log) {
+	//init function to grab events
+	$scope.init = function() {
+		  StudevesService.query({studentid: 1}).$promise.then(S,E);
+		  function S(response) {
+			  var eve = response;
+			  var pages = eve.length/7;
+			  StudevesService.query({studentid: 1, pagenum:0}).$promise.then(S1,E1);
+			  function S1(response) {
+				  $scope.events = response;
+				  $scope.pagenums = [];
+				  for(var i = 0;i<pages;i++) {
+					  $scope.pagenums.push(i+1);
+				  }
+			  }
+			  function E1(response)  {
+				  $log.debug(response);
+			  }  
+		  };
+		  function E(response)  {
+			  $log.debug(response);
+		  }  
+	    };
+	    // Query for switching pages
+	    $scope.getPagedQuery = function(newPageNum) {
+			  var pg = newPageNum-1;
+			  var qry = StudevesService.query({studentid: 1, pagenum:pg}).$promise.then(S,E);
+			  function S(response) {
+				  $scope.events = response;
+			  };
+			  function E(response) {
+				  $log.debug(response);
+			  };
+		    };
 	  // callback for ng-click 'viewevent':
 	    $scope.viewEvent = function (eventId) {
 	        $location.path('/events/' + eventId + "/view");
@@ -225,6 +255,7 @@ app.controller('EventListCtrl',  function($scope, $window, EventsService, EventS
     };
 	  
     $scope.addStudentstoEvent = function(eventId) {
+    	$log.debug(eventId);
         $location.path('/'+eventId+'/addToEvent');
     };
     
@@ -243,7 +274,7 @@ app.controller('EventListCtrl',  function($scope, $window, EventsService, EventS
 
   $scope.event = EventService.show({id: $routeParams.id});
   
-}).controller('EventCreateCtrl', function($scope, EventsService, StudevesService, $location,$log) {
+}).controller('EventCreateCtrl', function($scope, EventsService, StudevesService, $location,$log,$http,$cookies) {
 	$scope.items = [
 	                  'Exam',
 	                  'Tutorial',
@@ -300,7 +331,13 @@ app.controller('EventListCtrl',  function($scope, $window, EventsService, EventS
     	    	    		eventid: $scope.eventid,
     	    	    		studentid: $scope.studentid
     	    	    };
-    	    	    StudevesService.create($scope.studeve);
+    	    	    $http.defaults.headers.post['X-CSRFToken'] = $cookies.get('XSRF-TOKEN');
+    	    		 var data = $scope.studeve;
+    	    		 $http.post('/resource/studeves',data).then(function successCallback(response) {
+    	    			    $log.debug(response);
+    	    			  }, function errorCallback(response) {
+    	    			    $log.debug(response);
+    	    			  });
     	    	    $location.path('/events/'+$scope.eventid+"/view");
     		 };
     	        function errorOnGetEvent(response) {
@@ -406,7 +443,8 @@ app.controller('EventListCtrl',  function($scope, $window, EventsService, EventS
 	   $scope.studentscustomTexts = {buttonDefaultText: 'Select students to add:' };
 	   $scope.studentssettings = {displayProp: 'lastName', enableSearch: true ,scrollable: true , scrollableHeight: '500px'};
 	$scope.getStudents = function () {
-       StudentsService.query().$promise.then(S,E);
+	   $scope.eventid = $routeParams.eventid;
+       StudentsService.query({studentid: 2}).$promise.then(S,E);
        function S(response)  {
     	   $scope.students = response;
        };
@@ -567,12 +605,12 @@ $scope.selectedType = 'Else';
   $scope.event = EventService.show({id: $routeParams.id});
 
 });
-app.controller('CalendarCtrl',  function($scope, $window, $log, StudentService, EventsService, StudevesService, EventService, $location) {
+app.controller('CalendarCtrl',  function($scope, $window, $log,$routeParams, StudentService, EventsService, StudevesService, EventService, $location) {
     $scope.calendarView = 'month';
     $scope.calendarDate = new Date();
     $scope.CalendarEvents = [];
     $scope.studeves = [];
-    StudevesService.query({studentid: 2}).$promise.then(successOnGetStudEve, errorOnGetStudEve);
+    StudevesService.query({studentid: $routeParams.id}).$promise.then(successOnGetStudEve, errorOnGetStudEve);
     function successOnGetStudEve(response) {
     	$scope.events = response;
         angular.forEach($scope.events, function(value, key) {
@@ -650,4 +688,34 @@ app.controller('CalendarCtrl',  function($scope, $window, $log, StudentService, 
       event[field] = !event[field];
     };
 
+});
+app.controller('HomeCtrl',  function($scope, $window, EventsService, StudevesService, EventService, $location,$log) {
+	$scope.init = function() {
+		  StudevesService.query({studentid: 1}).$promise.then(S,E);
+		  function S(response) {
+			  var eve = response;
+			  $log.debug(eve.length);
+			  var pages = eve.length/7;
+			  $log.debug("pages:"+pages);
+			  var qry = StudevesService.query({studentid: 1, pagenum:0});
+			  $scope.events = qry;
+			  $scope.pagenums = [];
+			  for(var i = 0;i<pages;i++) {
+				  $scope.pagenums.push(i+1);
+			  }
+		  };
+		  function E(response)  {
+			  $log.debug(response);
+		  }  
+	    };
+	  $scope.getPagedQuery = function(newPageNum) {
+		  var pg = newPageNum-1;
+		  var qry = StudevesService.query({studentid: 1, pagenum:pg}).$promise.then(S,E);
+		  function S(response) {
+			  $scope.events = response;
+		  };
+		  function E(response) {
+			  $log.debug(response);
+		  };
+	    };
 });

@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.List;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
@@ -25,5 +26,7 @@ public interface StudeveRepository extends JpaRepository<Studeve, Long> {
 	@RequestMapping(value = "/studentid/{a}", method = RequestMethod.GET)
 	@ResponseBody
 	@Query(value = "SELECT e.id,e.begindate,e.creatorid,e.enddate,e.ended,e.location,e.name,e.typeofevent from Event e, Studeve se where e.id = se.eventid AND se.studentid = :studentid")
-	List<Object[]> findEventByStudentid(@Param("studentid") long studentid);
+	List<Object[]> findEventByStudentid(@Param("studentid") long studentid, Pageable pageable);
+	@Query(value = "SELECT e.id,e.begindate,e.creatorid,e.enddate,e.ended,e.location,e.name,e.typeofevent from Event e, Studeve se where e.id = se.eventid AND se.studentid = :studentid")
+	List<Object[]> findEventByStudentidAll(@Param("studentid") long studentid);
 }

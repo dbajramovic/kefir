@@ -1,21 +1,24 @@
 <div class="container-fluid" ng-controller="EventEditCtrl"
 	data-ng-init="getStudents()">
 	<form novalidate="novalidate" class="form-horizontal">
-		<h1 class="title">Add to Event #{{routeParams.eventid}}:</h1>
+		<h1 class="title">Add to Event #{{eventid}}:</h1>
 		<hr>
-		<div class="col-md-4">
-			<div ng-dropdown-multiselect="" options="students"
-				selected-model="studentsmodel" extra-settings="studentssettings"
-				translation-texts="studentscustomTexts"></div>
-		</div>
-		<div class="col-md-4">
-			<input type="hidden" name="XSRF-TOKEN" value="token" /><a
-				ng-click="addToEvent()" class="btn btn-primary" id="addToEventBtn">Add
-				to Event</a>
-		</div>
-		<div class="col-md-4">
-			<div class="alert alert-success" id="successAlert" ng-show="!Success">
-				<strong>Success!</strong> Students added.
+		<div class="row">
+			<div class="col-md-4">
+				<div ng-dropdown-multiselect="" options="students"
+					selected-model="studentsmodel" extra-settings="studentssettings"
+					translation-texts="studentscustomTexts"></div>
+			</div>
+			<div class="col-md-4">
+				<input type="hidden" name="XSRF-TOKEN" value="token" /><a
+					ng-click="addToEvent()" class="btn btn-primary" id="addToEventBtn">Add
+					to Event</a>
+			</div>
+			<div class="col-md-4">
+				<div class="alert alert-success center-block" id="successAlert"
+					ng-show="Success">
+					<strong>Success!</strong> Students added.
+				</div>
 			</div>
 		</div>
 	</form>

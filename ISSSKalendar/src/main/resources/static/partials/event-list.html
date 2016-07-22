@@ -1,4 +1,4 @@
-<div class="span6" ng-controller="EventListCtrl">
+<div class="span6" ng-controller="EventListCtrl" data-ng-init="init()">
 	<h1 class="title">Events</h1>
 	<hr>
 	<table class="table table-condensed">
@@ -9,14 +9,34 @@
 			</tr>
 		</thead>
 		<tbody>
-			<tr ng-repeat="event in events" style="vertical-align:middle">
+			<tr ng-repeat="event in events" style="vertical-align: middle">
 				<td>{{event.name}}</td>
-				<td><a ng-click="viewEvent(event._links.event.href.split('/')[5])" class="btn btn-small btn-primary">View</a></td>
-				<td><a ng-click="editEvent(event._links.event.href.split('/')[5])" class="btn btn-small btn-primary">Edit</a></td>
-				<td><a ng-click="addStudentstoEvent(event._links.event.href.split('/')[5])" class="btn btn-small btn-primary">Add Students to Event</a></td>
-				<td><a ng-click="deleteEvent(event._links.event.href.split('/')[5])" class="btn btn-small btn-danger">Delete</a></td>
+				<td><a
+					ng-click="viewEvent(event.id)"
+					class="btn btn-small btn-primary">View</a></td>
+				<td><a
+					ng-click="editEvent(event.id)"
+					class="btn btn-small btn-primary">Edit</a></td>
+				<td><a
+					ng-click="addStudentstoEvent(event.id)"
+					class="btn btn-small btn-primary center-block">Add Students to Event</a></td>
+				<td><a
+					ng-click="deleteEvent(event.id)"
+					class="btn btn-small btn-danger pull-right">Delete</a></td>
 			</tr>
 	</table>
-
-	<a href="/#/events/new" class="btn btn-small btn-primary">Add Event</a>
+	<div class="row">
+		<div class="col-md-6">
+			<ul class="pagination pagination-style">
+				<li ng-repeat="pagenum in pagenums" class="pagination-style"><a
+					class="pagination-style" data-ng-click="getPagedQuery(pagenum)">{{pagenum}}</a></li>
+				<li class="pagination-style"><a class="pagination-style"
+					data-ng-click="getPagedQuery(20)">>></a></li>
+			</ul>
+		</div>
+		<div class="col-md-6">
+			<a href="/#/events/new" class="btn btn-small btn-primary pull-right">Add
+				Event</a>
+		</div>
+	</div>
 </div>

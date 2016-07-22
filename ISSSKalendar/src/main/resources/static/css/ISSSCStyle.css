@@ -8,9 +8,10 @@
 
 body {
 	background-image: url(../img/bg-silver.jpg);
+	postion: absolute;
 }
 
-.footer {
+.footer-style {
 	right: 0;
 	bottom: 0;
 	left: 0;
@@ -31,7 +32,12 @@ body {
 	font-family: 'Montserrat', sans-serif;
 	color: white;
 }
-
+.pagination-style {
+	font-family: 'Montserrat', sans-serif;
+	color: white;
+	backgroud-color: black;
+	margin: 0px;
+}
 .nav-pills.li.a {
 	border-radius: 0 !important;
 }

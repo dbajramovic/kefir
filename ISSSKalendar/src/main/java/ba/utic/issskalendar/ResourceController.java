@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.orm.jpa.EntityScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.repository.query.Param;
@@ -43,10 +44,29 @@ public class ResourceController {
 	    this.eventRepository = er;
 	    this.studeveRepository = sr;
 	}
+	@RequestMapping(value="/studeve/{studentid}/{pagenum}",method = RequestMethod.GET)
+	@ResponseBody
+		public List<Event> readEvents(@PathVariable long studentid, @PathVariable long pagenum){
+		    List<Object[]> ce = this.studeveRepository.findEventByStudentid(studentid, new PageRequest((int) pagenum,7));
+		    List<Event> ce1 = new ArrayList<Event>();
+		    for(Object[] row : ce)  {
+		    	Event e = new Event();
+		    	e.setId((Long) row[0]);
+		    	e.setBegindate((Timestamp) row[1]);
+		    	e.setCreatorid((Long) row[2]);
+		    	e.setEnddate((Timestamp) row[3]);
+		    	e.setEnded((Boolean) row[4]);
+		    	e.setLocation((String) row[5]);
+		    	e.setName((String) row[6]);
+		    	e.setTypeofevent((String) row[7]);
+		    	ce1.add(e);
+		    }
+			return ce1;
+		}
 	@RequestMapping(value="/studeve/{studentid}",method = RequestMethod.GET)
 	@ResponseBody
-		public List<Event> readEvents(@PathVariable long studentid){
-		    List<Object[]> ce = this.studeveRepository.findEventByStudentid(studentid);
+		public List<Event> readEventsAll(@PathVariable long studentid){
+		    List<Object[]> ce = this.studeveRepository.findEventByStudentidAll(studentid);
 		    List<Event> ce1 = new ArrayList<Event>();
 		    for(Object[] row : ce)  {
 		    	Event e = new Event();
