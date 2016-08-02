@@ -31,11 +31,14 @@ app.config(function($routeProvider) {
 	.when('/events/:id/edit', {
 		templateUrl: 'partials/event-edit.html', controller: 'EventEditCtrl'
 		})
-	.when('/:id/calendar', {
+	.when('/:username/calendar', {
 		templateUrl: 'partials/calendar-full.html', controller: 'CalendarCtrl'
 		})
 	.when('/:eventid/addToEvent', {
 		templateUrl: 'partials/addToEvent.html', controller: 'EventEditCtrl'
+		})
+	.when('/:username/settings', {
+		templateUrl: 'partials/userSettings.html', controller: 'SettingsCtrl'
 		})
 	.otherwise('/');
 
@@ -52,6 +55,7 @@ function($rootScope, $http, $location, $route) {
 	$http.get('user').then(function(response) {
 		if (response.data.name) {
 			$rootScope.authenticated = true;
+			$rootScope.username = response.data.name;
 		} else {
 			$rootScope.authenticated = false;
 		}
@@ -119,7 +123,7 @@ app.factory('EventsService', function($resource,$log) {
 	  });
 	});
 app.factory('StudeveService', function($resource) {
-	  return $resource('/resource/studeves/:id', {}, {
+	  return $resource('/resource/studeves/:username', {}, {
 	      show: { method: 'GET' },
 	      update: { method: 'PUT', params: {id: '@id'} },
 	      delete: { method: 'DELETE', params: {id: '@id'} }
@@ -127,8 +131,19 @@ app.factory('StudeveService', function($resource) {
 	});
 
 app.factory('StudevesService', function($resource) {
-	  return $resource('/resource/studeve/:studentid/:pagenum', {}, {
-	      query: { method: 'GET', isArray: true, params: {studentid: '@studentid', pagenum: '@pagenum'},
+	  return $resource('/resource/studeve/:username/:pagenum', {}, {
+	      query: { method: 'GET', isArray: true, params: {username: '@username', pagenum: '@pagenum'},
+	          transformResponse: function(data) {
+	        	  return angular.fromJson(data);
+	             // return angular.fromJson(data)._embedded.studeves;
+	            }
+	      },
+	      create: { method: 'POST' }
+	  });
+	});
+app.factory('UserConfigurationService',function($resource) {
+	  return $resource('/resource/userconfiguration/:username', {}, {
+	      query: { method: 'GET', isArray: true, params: {username: '@username'},
 	          transformResponse: function(data) {
 	        	  return angular.fromJson(data);
 	             // return angular.fromJson(data)._embedded.studeves;
@@ -197,14 +212,17 @@ app.controller('StudentListCtrl',  function($scope, $window, StudentsService, St
     $scope.student = StudentService.show({id: $routeParams.id});
 
 });
-app.controller('EventListCtrl',  function($scope, $window, EventsService, StudevesService, EventService, $location,$log) {
-	//init function to grab events
+app.controller('EventListCtrl',  function($scope, $window, EventsService, StudevesService, EventService, $location,$log,$rootScope) {
+	// init function to grab events
 	$scope.init = function() {
-		  StudevesService.query({studentid: 1}).$promise.then(S,E);
+		// Two queries, one for number of events, with one parameter
+		  StudevesService.query({username: $rootScope.username}).$promise.then(S,E);
 		  function S(response) {
 			  var eve = response;
+			  // number of events is chosen to fit page, 7 per page
 			  var pages = eve.length/7;
-			  StudevesService.query({studentid: 1, pagenum:0}).$promise.then(S1,E1);
+			  // Second query, used to get paged queries
+			  StudevesService.query({username: $rootScope.username, pagenum:0}).$promise.then(S1,E1);
 			  function S1(response) {
 				  $scope.events = response;
 				  $scope.pagenums = [];
@@ -223,7 +241,7 @@ app.controller('EventListCtrl',  function($scope, $window, EventsService, Studev
 	    // Query for switching pages
 	    $scope.getPagedQuery = function(newPageNum) {
 			  var pg = newPageNum-1;
-			  var qry = StudevesService.query({studentid: 1, pagenum:pg}).$promise.then(S,E);
+			  var qry = StudevesService.query({username: $rootScope.username, pagenum:pg}).$promise.then(S,E);
 			  function S(response) {
 				  $scope.events = response;
 			  };
@@ -274,7 +292,7 @@ app.controller('EventListCtrl',  function($scope, $window, EventsService, Studev
 
   $scope.event = EventService.show({id: $routeParams.id});
   
-}).controller('EventCreateCtrl', function($scope, EventsService, StudevesService, $location,$log,$http,$cookies) {
+}).controller('EventCreateCtrl', function($scope, EventsService, StudevesService, $location,$log,$http,$cookies,$rootScope) {
 	$scope.items = [
 	                  'Exam',
 	                  'Tutorial',
@@ -308,6 +326,7 @@ app.controller('EventListCtrl',  function($scope, $window, EventsService, Studev
       $scope.event.enddate.setMinutes($scope.endhour.getMinutes());
       $scope.event.ended = false;
       $scope.event.typeofevent = $scope.selectedType;
+      $scope.event.creatorusername = $rootScope.username;
       if($scope.event.begindate < $scope.event.enddate) { 
     		EventsService.create($scope.event).$promise.then(successOnGetEvent, errorOnGetEvent);
     		 function successOnGetEvent(eventid) {
@@ -325,11 +344,9 @@ app.controller('EventListCtrl',  function($scope, $window, EventsService, Studev
     	            	$scope.eventid += angular.fromJson(eventid)[i];
     	            	i++;
     	            }
-    	          // placeholder id
-    	    	    $scope.studentid = 1;
     	    	    $scope.studeve = { 
     	    	    		eventid: $scope.eventid,
-    	    	    		studentid: $scope.studentid
+    	    	    		username: $rootScope.username
     	    	    };
     	    	    $http.defaults.headers.post['X-CSRFToken'] = $cookies.get('XSRF-TOKEN');
     	    		 var data = $scope.studeve;
@@ -436,7 +453,7 @@ app.controller('EventListCtrl',  function($scope, $window, EventsService, Studev
 	  $scope.clear = function() {
 	    $scope.mytime = null;
 	  };
-}).controller('EventEditCtrl', function($scope, $routeParams,$http, EventService,StudentsService,StudevesService, $location, $log, $cookies) {
+}).controller('EventEditCtrl', function($scope, $routeParams,$http, EventService,StudentsService,StudevesService, $location, $log, $cookies, $rootScope) {
 	$scope.Success = true;
 	$scope.listOfStudentsToAddToEvent = [];
 	   $scope.studentsmodel = [];
@@ -444,7 +461,7 @@ app.controller('EventListCtrl',  function($scope, $window, EventsService, Studev
 	   $scope.studentssettings = {displayProp: 'lastName', enableSearch: true ,scrollable: true , scrollableHeight: '500px'};
 	$scope.getStudents = function () {
 	   $scope.eventid = $routeParams.eventid;
-       StudentsService.query({studentid: 2}).$promise.then(S,E);
+       StudentsService.query({username: $rootScope.username}).$promise.then(S,E);
        function S(response)  {
     	   $scope.students = response;
        };
@@ -462,7 +479,7 @@ app.controller('EventListCtrl',  function($scope, $window, EventsService, Studev
     	 angular.forEach($scope.listOfStudentsToAddToEvent, function(value, key) {
     		 $scope.studeve = { 
 	    	    		eventid: $routeParams.eventid,
-	    	    		studentid: value.id
+	    	    		username: $rootScope.username
 	    	    };
     		 $http.defaults.headers.post['X-CSRFToken'] = $cookies.get('XSRF-TOKEN');
     		 var data = $scope.studeve;
@@ -605,12 +622,13 @@ $scope.selectedType = 'Else';
   $scope.event = EventService.show({id: $routeParams.id});
 
 });
-app.controller('CalendarCtrl',  function($scope, $window, $log,$routeParams, StudentService, EventsService, StudevesService, EventService, $location) {
+app.controller('CalendarCtrl',  function($scope, $window, $log,$routeParams, StudentService, EventsService, StudevesService, EventService, $location,$rootScope) {
     $scope.calendarView = 'month';
     $scope.calendarDate = new Date();
     $scope.CalendarEvents = [];
     $scope.studeves = [];
-    StudevesService.query({studentid: $routeParams.id}).$promise.then(successOnGetStudEve, errorOnGetStudEve);
+    $log.debug($routeParams.id);
+    StudevesService.query({username: $rootScope.username}).$promise.then(successOnGetStudEve, errorOnGetStudEve);
     function successOnGetStudEve(response) {
     	$scope.events = response;
         angular.forEach($scope.events, function(value, key) {
@@ -641,9 +659,7 @@ app.controller('CalendarCtrl',  function($scope, $window, $log,$routeParams, Stu
     function successOnGetEvent(response) {
     	$scope.events = response;
         angular.forEach($scope.events, function(value, key) {
-        	  $log.debug($scope.events[0]);
         	  var typeOfEvent = 'info';
-        	  // $log.debug($scope.events[i].studeeve[0]);
         	  if($scope.events[i].typeofevent === 'Exam') typeOfEvent = 'warning';
         	  if($scope.events[i].typeofevent === 'Tutorial') typeOfEvent = 'important';
         	  if($scope.events[i].typeofevent === 'Lecture') typeOfEvent = 'inverse';
@@ -689,15 +705,13 @@ app.controller('CalendarCtrl',  function($scope, $window, $log,$routeParams, Stu
     };
 
 });
-app.controller('HomeCtrl',  function($scope, $window, EventsService, StudevesService, EventService, $location,$log) {
+app.controller('HomeCtrl',  function($scope, $window, EventsService, StudevesService, EventService, $location,$log,$rootScope) {
 	$scope.init = function() {
-		  StudevesService.query({studentid: 1}).$promise.then(S,E);
+		  StudevesService.query({username: $rootScope.username}).$promise.then(S,E);
 		  function S(response) {
 			  var eve = response;
-			  $log.debug(eve.length);
 			  var pages = eve.length/7;
-			  $log.debug("pages:"+pages);
-			  var qry = StudevesService.query({studentid: 1, pagenum:0});
+			  var qry = StudevesService.query({username: $rootScope.username, pagenum:0});
 			  $scope.events = qry;
 			  $scope.pagenums = [];
 			  for(var i = 0;i<pages;i++) {
@@ -710,7 +724,7 @@ app.controller('HomeCtrl',  function($scope, $window, EventsService, StudevesSer
 	    };
 	  $scope.getPagedQuery = function(newPageNum) {
 		  var pg = newPageNum-1;
-		  var qry = StudevesService.query({studentid: 1, pagenum:pg}).$promise.then(S,E);
+		  var qry = StudevesService.query({username: $rootScope.username, pagenum:pg}).$promise.then(S,E);
 		  function S(response) {
 			  $scope.events = response;
 		  };
@@ -718,4 +732,20 @@ app.controller('HomeCtrl',  function($scope, $window, EventsService, StudevesSer
 			  $log.debug(response);
 		  };
 	    };
+});
+app.controller('SettingsCtrl',  function($scope, $window, UserConfigurationService, $location,$log,$rootScope) {
+	$scope.init = function() {
+		UserConfigurationService.query({username: $rootScope.username}).$promise.then(S,E);
+		  function S(response) {
+			  var uc = response;
+			  $scope.userconfiguration = uc[0];
+			  $log.debug($scope.userconfiguration);
+		  };
+		  function E(response)  {
+			  $log.debug(response);
+		  }  
+	    };
+	    $scope.updateSettings = function()  {
+			  // IMPLEMENT PUT REQ
+		  }
 });

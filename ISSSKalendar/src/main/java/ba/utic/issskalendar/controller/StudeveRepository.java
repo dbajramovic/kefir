@@ -25,8 +25,8 @@ public interface StudeveRepository extends JpaRepository<Studeve, Long> {
 
 	@RequestMapping(value = "/studentid/{a}", method = RequestMethod.GET)
 	@ResponseBody
-	@Query(value = "SELECT e.id,e.begindate,e.creatorid,e.enddate,e.ended,e.location,e.name,e.typeofevent from Event e, Studeve se where e.id = se.eventid AND se.studentid = :studentid")
-	List<Object[]> findEventByStudentid(@Param("studentid") long studentid, Pageable pageable);
-	@Query(value = "SELECT e.id,e.begindate,e.creatorid,e.enddate,e.ended,e.location,e.name,e.typeofevent from Event e, Studeve se where e.id = se.eventid AND se.studentid = :studentid")
-	List<Object[]> findEventByStudentidAll(@Param("studentid") long studentid);
+	@Query(value = "SELECT e.id,e.begindate,e.creatorid,e.enddate,e.ended,e.location,e.name,e.typeofevent from Event e, Studeve se where e.id = se.eventid AND se.username = :username")
+	List<Object[]> findEventByUsername(@Param("username") String username, Pageable pageable);
+	@Query(value = "SELECT e.id,e.begindate,e.creatorid,e.enddate,e.ended,e.location,e.name,e.typeofevent from Event e, Studeve se where e.id = se.eventid AND se.username = :username")
+	List<Object[]> findEventByUsernameAll(@Param("username") String username);
 }

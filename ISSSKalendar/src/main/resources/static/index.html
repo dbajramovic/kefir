@@ -32,11 +32,13 @@
 				href="#/students">studenti</a></li>
 			<li ng-show="authenticated" ng-class="{active:nav.tab('events')}"><a
 				href="#/events">Events</a></li>
-			<li ng-show="authenticated" ng-class="{active:nav.tab('events')}"><a
+			<li ng-show="authenticated" ng-class="{active:nav.tab('calendar')}"><a
 				href="#/1/calendar/">Calendar</a></li>
+			<li ng-show="authenticated" ng-class="{active:nav.tab('settings')}"><a
+				href="#/1/settings">Settings</a></li>
 			<li ng-show="!authenticated"
-				ng-class="{active:nav.tab('navigation')} nav-right"><a href="login">Login</a></li>
-			<li ng-show="authenticated" ng-class="nav-right"><a href="" ng-click="nav.logout()">Logout</a></li>
+				ng-class="{active:nav.tab('navigation')}"><a href="login">Login</a></li>
+			<li ng-show="authenticated"><a href="" ng-click="nav.logout()">Logout</a></li>
 		</ul>
 	</div>
 	<div ng-view class="container"></div>

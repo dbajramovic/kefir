@@ -34,8 +34,7 @@ body {
 }
 .pagination-style {
 	font-family: 'Montserrat', sans-serif;
-	color: white;
-	backgroud-color: black;
+	color: black;
 	margin: 0px;
 }
 .nav-pills.li.a {

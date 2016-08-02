@@ -21,7 +21,7 @@ public class Event {
 	private Boolean ended;
 	private String location;
 	private String typeofevent;
-	
+	private String creatorusername;
 	@OneToMany(mappedBy = "eventid")
 	private Set<Studeve> studeve;
 	public void setId(long Id) {
@@ -75,5 +75,11 @@ public class Event {
 	public void setTypeofevent(String type) {
 		this.typeofevent = type;
 	}
-	public Event() {};
+	public Event() {}
+	public String getCreatorusername() {
+		return creatorusername;
+	}
+	public void setCreatorusername(String creatorusername) {
+		this.creatorusername = creatorusername;
+	};
 }

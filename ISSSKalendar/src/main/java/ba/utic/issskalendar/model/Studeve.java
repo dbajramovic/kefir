@@ -11,7 +11,7 @@ public class Studeve {
 	private long id;
 	private long studentid;
 	private long eventid;
-	
+	private String username;
 	@ManyToOne
 	private Event event;
 	
@@ -36,6 +36,12 @@ public class Studeve {
 	public void setEventid(long eventid) {
 		this.eventid = eventid;
 	}
-	public Studeve() {};
+	public Studeve() {}
+	public String getUsername() {
+		return username;
+	}
+	public void setUsername(String username) {
+		this.username = username;
+	};
 	
 }

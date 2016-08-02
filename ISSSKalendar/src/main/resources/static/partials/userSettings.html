@@ -1,0 +1,13 @@
+<div class="span6" ng-controller="SettingsCtrl" data-ng-init="init()">
+	<h1 class="title">Greetings, {{userconfiguration.username}}</h1>
+	<form novalidate="novalidate" class="form-horizontal">
+		<div class="control-group">
+			<label class="control-label" for="inputBeginhour">Current role: {{userconfiguration.userrole}}</label>
+			<div class="checkbox">
+				<label><input type="checkbox" value="" ng-model="userconfiguration.showended">Show ended events?</label>
+			</div>
+			<br>
+			<a ng-click="updateSettings()" class="btn btn-primary">Update</a>
+		</div>
+	</form>
+</div>
