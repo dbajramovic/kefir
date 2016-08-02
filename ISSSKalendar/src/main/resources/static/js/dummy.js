@@ -1,5 +1,64 @@
-var app = angular.module('dummy', [ 'ngRoute', 'ngResource', 'ngCookies','mwl.calendar', 'ui.bootstrap', 'angularjs-dropdown-multiselect','feeds' ]);
+var app = angular.module('dummy', [ 'ngRoute', 'ngResource', 'ngCookies','mwl.calendar', 'ui.bootstrap', 'angularjs-dropdown-multiselect','feeds','pascalprecht.translate' ]);
 
+// Angular translate configuration
+var translationsBS = {
+		 HOME: {
+			 HEADLINE: 'ISSS Kalendar',
+			 INTRO_PARAGRAPH: 'Dobrodošli na Vaš ISSS kalendar. Vaši događaji i oni koji su Vam dodani su prikazani ispod.',
+			 COMMING_EVENTS: 'Vaši nadolazeći događaji:',
+			 TITLE_EVENT: 'Naziv',
+			 EVENT_NAME: 'Ime',
+			 EVENT_LOCATION: 'Mjesto',
+			 EVENT_ENDDATE: 'Vrijeme završetka',
+			 NEWS: 'Vijesti',
+			 VIEW: 'Pogledaj'
+		  },
+		  NAMESPACE: {
+		    PARAGRAPH: 'And it comes with awesome features!'
+		  }
+		};
+
+var translationsEN = {
+		  HOME: {
+			  HEADLINE: 'ISSS Calendar',
+			  INTRO_PARAGRAPH: 'Welcome to your ISSS calendar. Your events and those you are added to are shown below.',
+			  COMMING_EVENTS: 'Your upcoming events:',
+			  TITLE_EVENT: 'Title',
+			  EVENT_NAME: 'Name',
+			  EVENT_LOCATION: 'Location',
+			  EVENT_ENDDATE: 'Date of end',
+			  NEWS: 'News',
+			  VIEW: 'View'
+		  },  
+		  NAMESPACE: {
+		    PARAGRAPH: 'And it comes with awesome features!'
+		  }
+		};
+var translationsDE = {
+		  HOME: {
+			  HEADLINE: 'ISSS Kalendar',
+			  INTRO_PARAGRAPH: 'Willkommen in Ihrem ISSS Kalender. Ihre Ereinginsse und diejenigen, die Sie auch gehören haben Sie unten.',
+			  COMMING_EVENTS: 'Ihre bevorstehende Ereignisse:',
+			  TITLE_EVENT: 'Titel',
+			  EVENT_NAME: 'Name',
+			  EVENT_LOCATION: 'Standort',
+			  EVENT_ENDDATE: 'Enddatum',
+			  NEWS: 'Nachrichten',
+			  VIEW: 'Mehr'
+		  },  
+		  NAMESPACE: {
+		    PARAGRAPH: 'And it comes with awesome features!'
+		  }
+		};
+app.config(['$translateProvider', function($translateProvider) {
+	 $translateProvider.translations('bs', translationsBS);
+	 $translateProvider.translations('en', translationsEN);
+	 $translateProvider.translations('de', translationsDE);
+	 $translateProvider.preferredLanguage('bs');
+}]);
+
+
+// Routing
 app.config(function($routeProvider) {
 
 	$routeProvider.when('/', {
@@ -44,7 +103,7 @@ app.config(function($routeProvider) {
 
 }).controller('navigation',
 
-function($rootScope, $http, $location, $route) {
+function($rootScope, $http, $location, $route,$translate,$scope) {
 
 	var self = this;
 
@@ -62,7 +121,11 @@ function($rootScope, $http, $location, $route) {
 	}, function() {
 		$rootScope.authenticated = false;
 	});
-
+	
+    $scope.changeLanguage = function (langKey) {
+        $translate.use(langKey);
+      };
+      
 	self.credentials = {};
 
 	self.logout = function() {
@@ -705,7 +768,7 @@ app.controller('CalendarCtrl',  function($scope, $window, $log,$routeParams, Stu
     };
 
 });
-app.controller('HomeCtrl',  function($scope, $window, EventsService, StudevesService, EventService, $location,$log,$rootScope) {
+app.controller('HomeCtrl',  function($scope, $window, EventsService, StudevesService, EventService, $location,$log,$rootScope,$translate) {
 	$scope.init = function() {
 		  StudevesService.query({username: $rootScope.username}).$promise.then(S,E);
 		  function S(response) {

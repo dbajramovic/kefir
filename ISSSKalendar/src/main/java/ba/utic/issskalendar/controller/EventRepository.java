@@ -23,6 +23,4 @@ public interface EventRepository extends JpaRepository<Event, String>  {
 	
 	List<Event> findByEnddate(@Param("enddate") Timestamp enddate);
 	
-	   /* @Query("SELECT c.LastName FROM Person c where c.id = :id") 
-    Person findLastNameById(@Param("id") Long id);*/
 }

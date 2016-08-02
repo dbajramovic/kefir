@@ -1,26 +1,24 @@
 <div class="span6" data-ng-controller="HomeCtrl" data-ng-init="init()">
-	<h1 class="title">ISSS Calendar</h1>
+	<h1 class="title" translate="HOME.HEADLINE"></h1>
 	<hr>
 	<div ng-show="authenticated">
-		<p>Welcome to your ISSS Calendar. Your events, and those that you
-			are added to are shown below. More features are going to be
-			implemented soon.</p>
+		<p translate="HOME.INTRO_PARAGRAPH"></p>
 	</div>
 	<div ng-show="!authenticated">
 		<p>Niste prijavljeni. Kliknite na dugme &quot;login&quot; za ulaz</p>
 	</div>
 	<div class="col-md-6">
-		<h3 class="title">Your upcoming events</h3>
+		<h3 class="title" translate="HOME.COMMING_EVENTS"></h3>
 		<table class="table table-condensed">
 			<thead>
 				<tr>
-					<th style="min-width: 80px;">Naziv</th>
+					<th style="min-width: 80px;" translate="HOME.TITLE_EVENT">Naziv</th>
 					<th style="width: 20px;"></th>
 				</tr>
 			</thead>
 			<tbody>
 				<tr ng-repeat="event in events">
-					<td class="body-text">Name: {{event.name}}, Location: {{event.location}},  Ends: {{event.enddate |
+					<td class="body-text">{{ 'HOME.EVENT_NAME' | translate }}: {{event.name}}, {{ 'HOME.EVENT_LOCATION' | translate }}: {{event.location}},  {{ 'HOME.EVENT_ENDDATE' | translate }}: {{event.enddate |
 						date:'dd/MM/yyyy , hh:mm' }}</td>
 					<td><a
 						ng-click="viewEvent(event.id)"
@@ -35,7 +33,7 @@
 		</ul>
 	</div>
 	<div class="col-md-6">
-		<h3 class="title">News</h3>
+		<h3 class="title" translate="HOME.NEWS"></h3>
 		<feed summary="true" url="http://www.klix.ba/rss/vijesti" count="3" />
 	</div>
 </div>
