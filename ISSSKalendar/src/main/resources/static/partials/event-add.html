@@ -1,49 +1,61 @@
 <div class="container" ng-controller="EventCreateCtrl">
-    <h1 class="title">New Event</h1>
+	<h1 class="title">New Event</h1>
 
-    <form novalidate="novalidate" class="form-horizontal">
-     <div class="control-group">
-		   <span uib-dropdown on-toggle="toggled(open)">
-	 <label class="control-label" for="inputName">Type of event:</label>
-      <a href id="simple-dropdown" class="btn btn-primary" uib-dropdown-toggle ng-model="selectedType">
-        {{selectedType}}
-      </a>
-      <ul class="dropdown-menu" uib-dropdown-menu aria-labelledby="simple-dropdown">
-        <li ng-repeat="choice in items">
-          <a href ng-click="typeChosen(choice)">{{choice}}</a>
-        </li>
-      </ul>
-    </span>
-	</div>
-        <div class="control-group">
-            <label class="control-label" for="inputName">Name of event:</label>
-            <div class="controls">
-                <input type="text" id="inputName" class="form-control" ng-model="event.name"/>
-            </div>
-        </div>
-        <div class="control-group">
-            <label class="control-label" for="inputName">Location of event:</label>
-            <div class="controls">
-                <input type="text" id="location" class="form-control" ng-model="event.location"/>
-            </div>
-        </div>
-        <br>
-        <div class="col-md">
-	        <div class="control-group well well-sm col-md-6">
-	        	<label class="control-label" for="inputBegindate">Start date:</label>
-	              <uib-datepicker ng-model="event.begindate" datepicker-options="options"></uib-datepicker>
-	              <label class="control-label" for="inputBeginhour">Hour of start:</label> <uib-timepicker ng-model="beginhour" ng-change="changed()" hour-step="hstep" minute-step="mstep" show-meridian="false"></uib-timepicker>
-	         </div>
-	         <div class="control-group well well-sm col-md-6">
-	        	<label class="control-label" for="inputEnddate">End date:</label>
-	               <uib-datepicker ng-model="event.enddate"  datepicker-options="options"></uib-datepicker>
-	        		<label class="control-label" for="inputBeginhour">Hour of end:</label> <uib-timepicker ng-model="endhour" ng-change="changed()" hour-step="hstep" minute-step="mstep" show-meridian="false"></uib-timepicker>
-	        </div>
-	     </div>
-        <div class="control-group">
-            <div class="controls">
-                <a ng-click="createNewEvent()" class="btn btn-small btn-primary">create new event</a>
-            </div>
-        </div>
-    </form>
+	<form novalidate="novalidate" class="form-horizontal">
+		<div class="control-group">
+			<span uib-dropdown on-toggle="toggled(open)"> <label
+				class="control-label" for="inputName">Type of event:</label> <a href
+				id="simple-dropdown" class="btn btn-primary" uib-dropdown-toggle
+				ng-model="selectedType"> {{selectedType}} </a>
+				<ul class="dropdown-menu" uib-dropdown-menu
+					aria-labelledby="simple-dropdown">
+					<li ng-repeat="choice in items"><a href
+						ng-click="typeChosen(choice)">{{choice}}</a></li>
+				</ul>
+			</span>
+		</div>
+		<div class="control-group">
+			<label class="control-label" for="inputName">Name of event:</label>
+			<div class="controls">
+				<input type="text" id="inputName" class="form-control"
+					ng-model="event.name" />
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label" for="inputName">Location of
+				event:</label>
+			<div class="controls">
+				<input type="text" id="location" class="form-control"
+					ng-model="event.location" />
+			</div>
+		</div>
+		<br>
+		<div class="col-md">
+			<div class="control-group well well-sm col-md-6">
+				<label class="control-label" for="inputBegindate">Start
+					date:</label>
+				<uib-datepicker ng-model="event.begindate"
+					datepicker-options="options"></uib-datepicker>
+				<label class="control-label" for="inputBeginhour">Hour of
+					start:</label>
+				<uib-timepicker ng-model="beginhour" ng-change="changed()"
+					hour-step="hstep" minute-step="mstep" show-meridian="false"></uib-timepicker>
+			</div>
+			<div class="control-group well well-sm col-md-6">
+				<label class="control-label" for="inputEnddate">End date:</label>
+				<uib-datepicker ng-model="event.enddate"
+					datepicker-options="options"></uib-datepicker>
+				<label class="control-label" for="inputBeginhour">Hour of
+					end:</label>
+				<uib-timepicker ng-model="endhour" ng-change="changed()"
+					hour-step="hstep" minute-step="mstep" show-meridian="false"></uib-timepicker>
+			</div>
+		</div>
+		<div class="control-group">
+			<div class="controls">
+				<a ng-click="createNewEvent()" class="btn btn-small btn-primary">create
+					new event</a>
+			</div>
+		</div>
+	</form>
 </div>

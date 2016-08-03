@@ -55,6 +55,8 @@ app.config(['$translateProvider', function($translateProvider) {
 	 $translateProvider.translations('en', translationsEN);
 	 $translateProvider.translations('de', translationsDE);
 	 $translateProvider.preferredLanguage('bs');
+	 // remember language
+	 $translateProvider.useLocalStorage();
 }]);
 
 
@@ -103,7 +105,7 @@ app.config(function($routeProvider) {
 
 }).controller('navigation',
 
-function($rootScope, $http, $location, $route,$translate,$scope) {
+function($rootScope, $http, $location, $route,$translate,$scope,$cookie) {
 
 	var self = this;
 
