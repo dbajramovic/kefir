@@ -17,11 +17,14 @@ import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
 import org.springframework.data.rest.webmvc.config.RepositoryRestConfigurer;
 import org.springframework.data.rest.webmvc.config.RepositoryRestConfigurerAdapter;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
 
 import ba.utic.issskalendar.model.Event;
 import ba.utic.issskalendar.model.Studeve;
@@ -96,6 +99,12 @@ public class ResourceController {
 		    	e = row;
 		    	ce1.add(e);
 		    }
-			return ce1;
+			return ce;
+		}
+	@RequestMapping(value="/userconfiguration/edit/{username}",method = RequestMethod.POST)
+	@ResponseStatus(HttpStatus.OK)
+	@ResponseBody
+		public void updateSettings(@PathVariable String username, @RequestBody UserConfiguration temp){
+		    this.userConfigurationRepository.setSettings(temp.getUsername(), temp.getDefaultlanguage(), temp.getShowended(), temp.getUserrole());
 		}
 }

@@ -1,4 +1,4 @@
-var app = angular.module('dummy', [ 'ngRoute', 'ngResource', 'ngCookies','mwl.calendar', 'ui.bootstrap', 'angularjs-dropdown-multiselect','feeds','pascalprecht.translate' ]);
+var app = angular.module('dummy', [ 'ngRoute', 'ngResource', 'ngCookies','mwl.calendar', 'ui.bootstrap','angularjs-dropdown-multiselect','feeds','pascalprecht.translate','ngAnimate' ]);
 
 // Angular translate configuration
 var translationsBS = {
@@ -55,8 +55,8 @@ app.config(['$translateProvider', function($translateProvider) {
 	 $translateProvider.translations('en', translationsEN);
 	 $translateProvider.translations('de', translationsDE);
 	 $translateProvider.preferredLanguage('bs');
-	 // remember language
-	 $translateProvider.useLocalStorage();
+	 /*// remember language
+	 $translateProvider.useLocalStorage();*/
 }]);
 
 
@@ -105,7 +105,7 @@ app.config(function($routeProvider) {
 
 }).controller('navigation',
 
-function($rootScope, $http, $location, $route,$translate,$scope,$cookie) {
+function($rootScope, $http, $location, $route,$translate,$scope,$cookies) {
 
 	var self = this;
 
@@ -214,7 +214,8 @@ app.factory('UserConfigurationService',function($resource) {
 	             // return angular.fromJson(data)._embedded.studeves;
 	            }
 	      },
-	      create: { method: 'POST' }
+	      create: { method: 'POST' },
+	      update: { method: 'POST', params: { username: '@username' } }
 	  });
 	});
 // app.controller('StudentListCtrl', function($scope, $state, popupService,
@@ -798,8 +799,9 @@ app.controller('HomeCtrl',  function($scope, $window, EventsService, StudevesSer
 		  };
 	    };
 });
-app.controller('SettingsCtrl',  function($scope, $window, UserConfigurationService, $location,$log,$rootScope) {
+app.controller('SettingsCtrl',  function($scope, $window, UserConfigurationService, $location,$log,$rootScope,$http,$cookies) {
 	$scope.init = function() {
+		$scope.isCollapsed = true;
 		UserConfigurationService.query({username: $rootScope.username}).$promise.then(S,E);
 		  function S(response) {
 			  var uc = response;
@@ -810,7 +812,21 @@ app.controller('SettingsCtrl',  function($scope, $window, UserConfigurationServi
 			  $log.debug(response);
 		  }  
 	    };
+	    //  Language codes -> Bosnian - 1 English - 2 German - 3
+	    $scope.setLanguage = function(lang) {
+			 $scope.userconfiguration.defaultlanguage = lang;
+			 $log.debug($scope.userconfiguration);
+		  };
+		  
 	    $scope.updateSettings = function()  {
-			  // IMPLEMENT PUT REQ
+ 		 $http.defaults.headers.post['X-CSRFToken'] = $cookies.get('XSRF-TOKEN');
+ 		 var data = $scope.userconfiguration;
+ 		 $http.post('/resource/userconfiguration/edit/:username',data).then(function successCallback(response) {
+ 			    var Success = response;
+ 			    $log.debug(Success);
+ 			    //$location.path('/'+$rootScope.username+'/settings');
+ 			  }, function errorCallback(response) {
+ 			    $log.debug(response);
+ 			  });
 		  }
 });
