@@ -66,6 +66,8 @@ public class ResourceController {
 		    	e.setLocation((String) row[5]);
 		    	e.setName((String) row[6]);
 		    	e.setTypeofevent((String) row[7]);
+		    	e.setLatitude((String) row[8]);
+		    	e.setLongitude((String) row[9]);
 		    	ce1.add(e);
 		    }
 			return ce1;
@@ -85,6 +87,8 @@ public class ResourceController {
 		    	e.setLocation((String) row[5]);
 		    	e.setName((String) row[6]);
 		    	e.setTypeofevent((String) row[7]);
+		    	e.setLatitude((String) row[8]);
+		    	e.setLongitude((String) row[9]);
 		    	ce1.add(e);
 		    }
 			return ce1;

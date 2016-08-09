@@ -1,4 +1,4 @@
-var app = angular.module('dummy', [ 'ngRoute', 'ngResource', 'ngCookies','mwl.calendar', 'ui.bootstrap','angularjs-dropdown-multiselect','feeds','pascalprecht.translate','ngAnimate' ]);
+var app = angular.module('dummy', [ 'ngRoute', 'ngResource', 'ngCookies','ngAnimate','mwl.calendar', 'ui.bootstrap','angularjs-dropdown-multiselect','feeds','uiGmapgoogle-maps','pascalprecht.translate']);
 
 // Angular translate configuration
 var translationsBS = {
@@ -50,15 +50,23 @@ var translationsDE = {
 		    PARAGRAPH: 'And it comes with awesome features!'
 		  }
 		};
-app.config(['$translateProvider', function($translateProvider) {
+app.config(['$translateProvider',function($translateProvider) {
 	 $translateProvider.translations('bs', translationsBS);
 	 $translateProvider.translations('en', translationsEN);
 	 $translateProvider.translations('de', translationsDE);
 	 $translateProvider.preferredLanguage('bs');
-	 /*// remember language
-	 $translateProvider.useLocalStorage();*/
+	 
+	 /*
+		 * // remember language $translateProvider.useLocalStorage();
+		 */
 }]);
-
+app.config(['uiGmapGoogleMapApiProvider', function (GoogleMapApi) {
+	  GoogleMapApi.configure({
+		    key: 'AIzaSyBVHKN0C3XOQPDyd4nn_LUGsNnT10nIIH0',
+		    v: '3.23',
+		    libraries: 'weather,geometry,visualization,places'
+		  });
+		}]);
 
 // Routing
 app.config(function($routeProvider) {
@@ -321,6 +329,7 @@ app.controller('EventListCtrl',  function($scope, $window, EventsService, Studev
 	    };
     // callback for ng-click 'editevent':
     $scope.editEvent = function (eventId) {
+    	$log.debug(eventId);
         $location.path('/events/' + eventId + "/edit");
     };
     // callback for ng-click 'addStudentstoEvent'
@@ -339,11 +348,10 @@ app.controller('EventListCtrl',  function($scope, $window, EventsService, Studev
     };
 	  
     $scope.addStudentstoEvent = function(eventId) {
-    	$log.debug(eventId);
         $location.path('/'+eventId+'/addToEvent');
     };
     
-}).controller('EventViewCtrl', function($scope, $routeParams, EventService, $location) {
+}).controller('EventViewCtrl', function($scope, $routeParams, $log,EventService, $location) {
 
   // callback for ng-click 'updateevent':
   $scope.updateevent = function () {
@@ -355,10 +363,66 @@ app.controller('EventListCtrl',  function($scope, $window, EventsService, Studev
   $scope.cancel = function () {
       $location.path('/events');
   };
-
+  $scope.editEvent = function() {
+      $location.path('/events/'+$routeParams.id+'/edit');
+  };
   $scope.event = EventService.show({id: $routeParams.id});
   
-}).controller('EventCreateCtrl', function($scope, EventsService, StudevesService, $location,$log,$http,$cookies,$rootScope) {
+}).controller('EventCreateCtrl', function($scope, EventsService, StudevesService, $location,$log,$http,$cookies,$rootScope,uiGmapGoogleMapApi) {
+	$scope.markers = [];
+	$scope.lat = 43.85616158077486;
+    $scope.lon = 18.396466970443726;
+	$scope.mapinit = function()  {
+		$scope.event = {};
+		// Create a map object and specify the DOM element for display.
+		 uiGmapGoogleMapApi.then(function(maps) {
+			 $scope.map = { center: { latitude: 43.85616158077486, longitude: 18.396466970443726 }, zoom: 13};
+			 $scope.marker = {
+				      id: 0,
+				      coords: {
+				        latitude: 43.85616158077486,
+				        longitude: 18.396466970443726
+				      },
+				      options: { draggable: true },
+				      events: {
+				        dragend: function (marker, eventName, args) {
+				          // $log.log('marker dragend');
+				        var lattemp = marker.getPosition().lat();
+				           var lontemp = marker.getPosition().lng();
+				          $log.log(lattemp);
+				          $log.log(lontemp);
+				          $scope.lat = lattemp;
+				          $scope.lon = lontemp;
+				          $scope.marker.options = {
+				            draggable: true,
+				            labelContent: "lat: " + $scope.marker.coords.latitude + ' ' + 'lon: ' + $scope.marker.coords.longitude,
+				            labelAnchor: "100 0",
+				            labelClass: "marker-labels"
+				          };
+				        }
+				      }
+				    };
+			 $scope.searchbox = {
+					 template:'partials/searchbox.tpl.html',
+					 parentdiv: 'location',
+			          events:{
+			            places_changed: function (searchBox) {
+			            	var result = searchBox.getPlaces();
+			            	if(result != null) {
+			            		$scope.lat = result[0].geometry.location.lat();
+			            		$scope.lon = result[0].geometry.location.lng();
+			            		$scope.locationstring = result[0].name +", "+result[0].formatted_address;
+			            		$scope.marker.coords = { latitude: $scope.lat, longitude: $scope.lon };
+			            		$scope.map.center = { latitude: $scope.lat, longitude: $scope.lon };	            		
+			            	}
+			            }
+			          },
+			 options: {
+				 bounds: new google.maps.LatLngBounds(new google.maps.LatLng(45.16267407976457,15.830612182617188),new google.maps.LatLng(42.595554553719204,18.522262573242188))
+			 }
+			 };
+		    });
+    };
 	$scope.items = [
 	                  'Exam',
 	                  'Tutorial',
@@ -391,8 +455,12 @@ app.controller('EventListCtrl',  function($scope, $window, EventsService, Studev
       $scope.event.enddate.setHours($scope.endhour.getHours());
       $scope.event.enddate.setMinutes($scope.endhour.getMinutes());
       $scope.event.ended = false;
+      $scope.event.location = $scope.locationstring;
       $scope.event.typeofevent = $scope.selectedType;
       $scope.event.creatorusername = $rootScope.username;
+      $scope.event.latitude = $scope.lat;
+      $scope.event.longitude = $scope.lon;
+      $log.debug($scope.event);
       if($scope.event.begindate < $scope.event.enddate) { 
     		EventsService.create($scope.event).$promise.then(successOnGetEvent, errorOnGetEvent);
     		 function successOnGetEvent(eventid) {
@@ -519,7 +587,40 @@ app.controller('EventListCtrl',  function($scope, $window, EventsService, Studev
 	  $scope.clear = function() {
 	    $scope.mytime = null;
 	  };
-}).controller('EventEditCtrl', function($scope, $routeParams,$http, EventService,StudentsService,StudevesService, $location, $log, $cookies, $rootScope) {
+}).controller('EventEditCtrl', function($scope, $routeParams,$http, EventService,StudentsService,StudevesService, $location, $log, $cookies, $rootScope, uiGmapGoogleMapApi) {
+	$scope.lat = 43.85616158077486;
+    $scope.lon = 18.396466970443726;
+	$scope.mapinit = function()  {
+		// Create a map object and specify the DOM element for display.
+		 uiGmapGoogleMapApi.then(function(maps) {
+			 $scope.map = { center: { latitude: $scope.event.latitude, longitude: $scope.event.longitude }, zoom: 13 };
+			 $scope.marker = {
+				      id: 0,
+				      coords: {
+				        latitude: $scope.event.latitude,
+				        longitude: $scope.event.longitude
+				      },
+				      options: { draggable: true },
+				      events: {
+				        dragend: function (marker, eventName, args) {
+				          // $log.log('marker dragend');
+				        var lattemp = marker.getPosition().lat();
+				           var lontemp = marker.getPosition().lng();
+				          $log.log(lattemp);
+				          $log.log(lontemp);
+				          $scope.event.latitude = lattemp;
+				          $scope.event.longitude = lontemp;
+				          $scope.marker.options = {
+				            draggable: true,
+				            labelContent: "lat: " + $scope.marker.coords.latitude + ' ' + 'lon: ' + $scope.marker.coords.longitude,
+				            labelAnchor: "100 0",
+				            labelClass: "marker-labels"
+				          };
+				        }
+				      }
+				    };
+		    });
+    };
 	$scope.Success = true;
 	$scope.listOfStudentsToAddToEvent = [];
 	   $scope.studentsmodel = [];
@@ -676,7 +777,7 @@ $scope.selectedType = 'Else';
   // callback for ng-click 'updateevent':
   $scope.updateevent = function () {
 	
-  	eventService.update($scope.event);
+  	EventService.update($scope.event);
       $location.path('/events');
   };
 
@@ -780,6 +881,7 @@ app.controller('HomeCtrl',  function($scope, $window, EventsService, StudevesSer
 			  var qry = StudevesService.query({username: $rootScope.username, pagenum:0});
 			  $scope.events = qry;
 			  $scope.pagenums = [];
+			  $log.debug(response);
 			  for(var i = 0;i<pages;i++) {
 				  $scope.pagenums.push(i+1);
 			  }
@@ -812,7 +914,7 @@ app.controller('SettingsCtrl',  function($scope, $window, UserConfigurationServi
 			  $log.debug(response);
 		  }  
 	    };
-	    //  Language codes -> Bosnian - 1 English - 2 German - 3
+	    // Language codes -> Bosnian - 1 English - 2 German - 3
 	    $scope.setLanguage = function(lang) {
 			 $scope.userconfiguration.defaultlanguage = lang;
 			 $log.debug($scope.userconfiguration);
@@ -824,7 +926,7 @@ app.controller('SettingsCtrl',  function($scope, $window, UserConfigurationServi
  		 $http.post('/resource/userconfiguration/edit/:username',data).then(function successCallback(response) {
  			    var Success = response;
  			    $log.debug(Success);
- 			    //$location.path('/'+$rootScope.username+'/settings');
+ 			    // $location.path('/'+$rootScope.username+'/settings');
  			  }, function errorCallback(response) {
  			    $log.debug(response);
  			  });

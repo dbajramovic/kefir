@@ -1,4 +1,5 @@
-<div class="container" ng-controller="EventCreateCtrl">
+<div class="container" ng-controller="EventCreateCtrl"
+	data-ng-init="mapinit()">
 	<h1 class="title">New Event</h1>
 
 	<form novalidate="novalidate" class="form-horizontal">
@@ -21,13 +22,25 @@
 					ng-model="event.name" />
 			</div>
 		</div>
-		<div class="control-group">
-			<label class="control-label" for="inputName">Location of
-				event:</label>
-			<div class="controls">
-				<input type="text" id="location" class="form-control"
-					ng-model="event.location" />
+		<br>
+		<div class="well well-lg">
+			<div class="control-group">
+				<label class="control-label" for="inputName">Location of
+					event:</label>
+				<div class="controls" id="location">
+					
+				</div>
 			</div>
+			<br>
+			<script type="text/ng-template" id="searchbox.tpl.html">
+        <input type="text" placeholder="Search Box">
+    </script>
+			<ui-gmap-google-map ng-if="map.center" options='map.options'
+				center='map.center' zoom='map.zoom' pan='true'> <ui-gmap-search-box
+				template="searchbox.template" events="searchbox.events" parentdiv="searchbox.parentdiv"
+				options="searchbox.options" )></ui-gmap-search-box> <ui-gmap-marker
+				coords="marker.coords" options="marker.options"
+				events="marker.events" idkey="marker.id"> </ui-gmap-marker> </ui-gmap-google-map>
 		</div>
 		<br>
 		<div class="col-md">

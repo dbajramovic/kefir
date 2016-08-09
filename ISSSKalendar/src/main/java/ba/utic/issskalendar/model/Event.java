@@ -22,6 +22,8 @@ public class Event {
 	private String location;
 	private String typeofevent;
 	private String creatorusername;
+	private String latitude;
+	private String longitude;
 	@OneToMany(mappedBy = "eventid")
 	private Set<Studeve> studeve;
 	public void setId(long Id) {
@@ -81,5 +83,17 @@ public class Event {
 	}
 	public void setCreatorusername(String creatorusername) {
 		this.creatorusername = creatorusername;
+	}
+	public String getLongitude() {
+		return longitude;
+	}
+	public void setLongitude(String longitude) {
+		this.longitude = longitude;
+	}
+	public String getLatitude() {
+		return latitude;
+	}
+	public void setLatitude(String latitude) {
+		this.latitude = latitude;
 	};
 }

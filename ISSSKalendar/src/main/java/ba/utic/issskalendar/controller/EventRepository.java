@@ -13,7 +13,7 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import ba.utic.issskalendar.model.Event;
 @RepositoryRestResource(collectionResourceRel = "events", path = "events")
 
-public interface EventRepository extends JpaRepository<Event, String>  {
+public interface EventRepository extends JpaRepository<Event, Long>  {
 
 	List<Event> findByName(@Param("name") String name);
 
@@ -22,5 +22,7 @@ public interface EventRepository extends JpaRepository<Event, String>  {
 	List<Event> findByBegindate(@Param("begindate") Timestamp begindate);
 	
 	List<Event> findByEnddate(@Param("enddate") Timestamp enddate);
+	
+	Event findById(@Param("id") long id);
 	
 }

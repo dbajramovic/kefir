@@ -5,13 +5,19 @@
 	color: white;
 	width: 100%;
 }
+
 .flag {
 	width: 30px;
 	height: 15px;
 }
+
 body {
 	background-image: url(../img/bg-silver.jpg);
 	postion: absolute;
+}
+
+.angular-google-map-container {
+	height: 400px;
 }
 
 .footer-style {
@@ -35,11 +41,13 @@ body {
 	font-family: 'Montserrat', sans-serif;
 	color: white;
 }
+
 .pagination-style {
 	font-family: 'Montserrat', sans-serif;
 	color: black;
 	margin: 0px;
 }
+
 .nav-pills.li.a {
 	border-radius: 0 !important;
 }
