@@ -22,23 +22,23 @@
 					ng-model="event.name" />
 			</div>
 		</div>
-		<label class="control-label">Current location:</label>
-			<br>
-			<div class="well well-lg">
-				<div class="control-group">
-					<label class="control-label" for="inputName">Location of
-						event:</label>
-					<div class="controls">
-						<input type="text" id="location" class="form-control"
-							ng-model="event.location" />
-					</div>
-				</div>
-				<br>
-				<ui-gmap-google-map ng-if="map.center" options='map.options'
-					center='map.center' zoom='map.zoom'> <ui-gmap-marker
-					coords="marker.coords" options="marker.options"
-					events="marker.events" idkey="marker.id"> </ui-gmap-marker> </ui-gmap-google-map>
+		<label class="control-label">Current location:</label> <br>
+		<div class="well well-lg">
+			<div class="control-group">
+				<label class="control-label" for="inputName">Location of
+					event:</label>
+				<div class="controls" id="location"></div>
 			</div>
+			<br>
+			<script type="text/ng-template" id="searchbox.tpl.html">
+        <input type="text" placeholder="Search Box">
+    </script>
+			<br>
+			<ui-gmap-google-map ng-if="map.center" options='map.options'
+				center='map.center' zoom='map.zoom'> <ui-gmap-marker
+				coords="marker.coords" options="marker.options"
+				events="marker.events" idkey="marker.id"> </ui-gmap-marker> </ui-gmap-google-map>
+		</div>
 		<br>
 		<div class="col-md">
 			<div class="control-group well well-sm col-md-6">
@@ -63,7 +63,8 @@
 		</div>
 		<div class="control-group">
 			<div class="controls">
-				<a ng-click="updateevent()" class="btn btn-small btn-primary">update event</a>
+				<a ng-click="updateevent()" class="btn btn-small btn-primary">update
+					event</a>
 			</div>
 		</div>
 	</form>

@@ -63,7 +63,7 @@ app.config(['$translateProvider',function($translateProvider) {
 app.config(['uiGmapGoogleMapApiProvider', function (GoogleMapApi) {
 	  GoogleMapApi.configure({
 		    key: 'AIzaSyBVHKN0C3XOQPDyd4nn_LUGsNnT10nIIH0',
-		    v: '3.23',
+		    v: '3.24',
 		    libraries: 'weather,geometry,visualization,places'
 		  });
 		}]);
@@ -113,7 +113,7 @@ app.config(function($routeProvider) {
 
 }).controller('navigation',
 
-function($rootScope, $http, $location, $route,$translate,$scope,$cookies) {
+function($rootScope, $http, $location, $route,$translate,$scope,$cookies,$log) {
 
 	var self = this;
 
@@ -327,14 +327,9 @@ app.controller('EventListCtrl',  function($scope, $window, EventsService, Studev
 	    $scope.viewEvent = function (eventId) {
 	        $location.path('/events/' + eventId + "/view");
 	    };
-    // callback for ng-click 'editevent':
-    $scope.editEvent = function (eventId) {
-    	$log.debug(eventId);
-        $location.path('/events/' + eventId + "/edit");
-    };
     // callback for ng-click 'addStudentstoEvent'
     $scope.editEvent = function (eventId) {
-        $location.path(eventId + '/addToEvent');
+        $location.path('/events/'+eventId + '/edit');
     };
     // callback for ng-click 'deleteEvent':
     $scope.deleteEvent = function (eventId) {
@@ -386,7 +381,7 @@ app.controller('EventListCtrl',  function($scope, $window, EventsService, Studev
 				      options: { draggable: true },
 				      events: {
 				        dragend: function (marker, eventName, args) {
-				          // $log.log('marker dragend');
+				         
 				        var lattemp = marker.getPosition().lat();
 				           var lontemp = marker.getPosition().lng();
 				          $log.log(lattemp);
@@ -561,7 +556,7 @@ app.controller('EventListCtrl',  function($scope, $window, EventsService, Studev
 	    return '';
 	  }
 	  $scope.hstep = 1;
-	  $scope.mstep = 15;
+	  $scope.mstep = 1;
 
 	  $scope.options = {
 	    hstep: [1, 2, 3],
@@ -592,34 +587,65 @@ app.controller('EventListCtrl',  function($scope, $window, EventsService, Studev
     $scope.lon = 18.396466970443726;
 	$scope.mapinit = function()  {
 		// Create a map object and specify the DOM element for display.
-		 uiGmapGoogleMapApi.then(function(maps) {
-			 $scope.map = { center: { latitude: $scope.event.latitude, longitude: $scope.event.longitude }, zoom: 13 };
-			 $scope.marker = {
-				      id: 0,
-				      coords: {
-				        latitude: $scope.event.latitude,
-				        longitude: $scope.event.longitude
-				      },
-				      options: { draggable: true },
-				      events: {
-				        dragend: function (marker, eventName, args) {
-				          // $log.log('marker dragend');
-				        var lattemp = marker.getPosition().lat();
-				           var lontemp = marker.getPosition().lng();
-				          $log.log(lattemp);
-				          $log.log(lontemp);
-				          $scope.event.latitude = lattemp;
-				          $scope.event.longitude = lontemp;
-				          $scope.marker.options = {
-				            draggable: true,
-				            labelContent: "lat: " + $scope.marker.coords.latitude + ' ' + 'lon: ' + $scope.marker.coords.longitude,
-				            labelAnchor: "100 0",
-				            labelClass: "marker-labels"
-				          };
-				        }
-				      }
-				    };
-		    });
+		EventService.show({id: $routeParams.id}).$promise.then(function(response) {
+			$scope.event = response;
+			var parts = $scope.event.begindate.match(/(\d+)/g);
+			var sd = new Date(parts[0], parts[1]-1, parts[2], parts[3], parts[4]);
+			$scope.beginhour = new Date();
+			$scope.beginhour.setHours(sd.getHours());
+			$scope.beginhour.setMinutes(sd.getMinutes());
+			var parts = $scope.event.enddate.match(/(\d+)/g);
+			var sd = new Date(parts[0], parts[1]-1, parts[2], parts[3], parts[4]);
+			$scope.endhour = new Date();
+			$scope.endhour.setHours(sd.getHours());
+			$scope.endhour.setMinutes(sd.getMinutes());
+			uiGmapGoogleMapApi.then(function(maps) {
+				 $scope.map = { center: { latitude: $scope.event.latitude, longitude: $scope.event.longitude }, zoom: 13 };
+				 $scope.marker = {
+					      id: 0,
+					      coords: {
+					        latitude: $scope.event.latitude,
+					        longitude: $scope.event.longitude
+					      },
+					      options: { draggable: true },
+					      events: {
+					        dragend: function (marker, eventName, args) {
+					        var lattemp = marker.getPosition().lat();
+					           var lontemp = marker.getPosition().lng();
+					          $log.log(lattemp);
+					          $log.log(lontemp);
+					          $scope.event.latitude = lattemp;
+					          $scope.event.longitude = lontemp;
+					          $scope.marker.options = {
+					            draggable: true,
+					            labelContent: "lat: " + $scope.marker.coords.latitude + ' ' + 'lon: ' + $scope.marker.coords.longitude,
+					            labelAnchor: "100 0",
+					            labelClass: "marker-labels"
+					          };
+					        }
+					      }
+					    };
+				 $scope.searchbox = {
+						 template:'partials/searchbox.tpl.html',
+						 parentdiv: 'location',
+				          events:{
+				            places_changed: function (searchBox) {
+				            	var result = searchBox.getPlaces();
+				            	if(result != null) {
+				            		$scope.lat = result[0].geometry.location.lat();
+				            		$scope.lon = result[0].geometry.location.lng();
+				            		$scope.locationstring = result[0].name +", "+result[0].formatted_address;
+				            		$scope.marker.coords = { latitude: $scope.lat, longitude: $scope.lon };
+				            		$scope.map.center = { latitude: $scope.lat, longitude: $scope.lon };	            		
+				            	}
+				            }
+				          },
+				 options: {
+					 bounds: new google.maps.LatLngBounds(new google.maps.LatLng(45.16267407976457,15.830612182617188),new google.maps.LatLng(42.595554553719204,18.522262573242188))
+				 }
+				 };
+			    });
+		});
     };
 	$scope.Success = true;
 	$scope.listOfStudentsToAddToEvent = [];
@@ -748,7 +774,7 @@ $scope.selectedType = 'Else';
 	            	    return '';
 	            	  }
 	            	  $scope.hstep = 1;
-	            	  $scope.mstep = 15;
+	            	  $scope.mstep = 1;
 
 	            	  $scope.options = {
 	            	    hstep: [1, 2, 3],
@@ -776,8 +802,15 @@ $scope.selectedType = 'Else';
 	            	  };
   // callback for ng-click 'updateevent':
   $scope.updateevent = function () {
-	
-  	EventService.update($scope.event);
+	  var a = new Date($scope.event.begindate);
+	  a.setHours($scope.beginhour.getHours());
+	  a.setMinutes($scope.beginhour.getMinutes());
+	  $scope.event.begindate = a;
+	  a = new Date($scope.event.enddate);
+	  a.setHours($scope.endhour.getHours());
+	  a.setMinutes($scope.endhour.getMinutes());
+	  $scope.event.enddate = a;
+  	  EventService.update($scope.event);
       $location.path('/events');
   };
 
@@ -785,8 +818,6 @@ $scope.selectedType = 'Else';
   $scope.cancel = function () {
       $location.path('/events');
   };
-
-  $scope.event = EventService.show({id: $routeParams.id});
 
 });
 app.controller('CalendarCtrl',  function($scope, $window, $log,$routeParams, StudentService, EventsService, StudevesService, EventService, $location,$rootScope) {
