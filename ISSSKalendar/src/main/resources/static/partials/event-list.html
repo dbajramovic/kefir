@@ -1,10 +1,10 @@
 <div class="span6" ng-controller="EventListCtrl" data-ng-init="init()">
-	<h1 class="title">Events</h1>
+	<h1 class="title" translate="EVENTS.HEADLINE"></h1>
 	<hr>
 	<table class="table table-condensed">
 		<thead>
 			<tr>
-				<th style="min-width: 80px;">Naziv</th>
+				<th style="min-width: 80px;" translate="EVENTS.TITLE_EVENT"></th>
 				<th style="width: 20px;"></th>
 			</tr>
 		</thead>
@@ -13,16 +13,16 @@
 				<td>{{event.name}}</td>
 				<td><a
 					data-ng-click="viewEvent(event.id)"
-					class="btn btn-small btn-primary">View</a></td>
+					class="btn btn-small btn-primary" translate="EVENTS.BUTTON_VIEW"></a></td>
 				<td><a
 					data-ng-click="editEvent(event.id)"
-					class="btn btn-small btn-primary">Edit</a></td>
+					class="btn btn-small btn-primary" translate="EVENTS.BUTTON_EDIT"></a></td>
 				<td><a
 					data-ng-click="addStudentstoEvent(event.id)"
-					class="btn btn-small btn-primary center-block">Add Students to Event</a></td>
+					class="btn btn-small btn-primary center-block" translate="EVENTS.BUTTON_ADD_STUD"></a></td>
 				<td><a
 					data-ng-click="deleteEvent(event.id)"
-					class="btn btn-small btn-danger pull-right">Delete</a></td>
+					class="btn btn-small btn-danger pull-right" translate="EVENTS.BUTTON_DELETE"></a></td>
 			</tr>
 	</table>
 	<div class="row">
@@ -35,7 +35,7 @@
 			</ul>
 		</div>
 		<div class="col-md-6">
-			<a href="/#/events/new" class="btn btn-small btn-primary pull-right">Add
+			<a href="/#/events/new" class="btn btn-small btn-primary pull-right" translate="EVENTS.BUTTON_ADD_EVENT">Add
 				Event</a>
 		</div>
 	</div>

@@ -13,6 +13,25 @@ var translationsBS = {
 			 NEWS: 'Vijesti',
 			 VIEW: 'Pogledaj'
 		  },
+		  EVENTS: {
+			    HEADLINE: 'Događaji',
+			    TITLE_EVENT: 'Naziv',
+			    BUTTON_VIEW: 'Detalji',
+			    BUTTON_EDIT: 'Uredi',
+			    BUTTON_ADD_STUD: 'Dodaj osobe na događaj',
+			    BUTTON_DELETE: 'Briši',
+			    BUTTON_ADD_EVENT: 'Novi događaj',
+			},
+			CALENDAR: {
+			    HEADLINE: 'Vaš kalendar',
+			    CAL_LAST_MONTH: 'Prošli mjesec',
+			    CAL_TODAY: 'Danas',
+			    CAL_NEXT_MONTH: 'Sljedeći mjesec',
+			    CAL_YEAR: 'Godina',
+			    CAL_MONTH: 'Mjesec',
+			    CAL_WEEK: 'Sedmica',
+			    CAL_DAY: 'Dan',
+			},
 		  NAMESPACE: {
 		    PARAGRAPH: 'And it comes with awesome features!'
 		  }
@@ -29,7 +48,26 @@ var translationsEN = {
 			  EVENT_ENDDATE: 'Date of end',
 			  NEWS: 'News',
 			  VIEW: 'View'
-		  },  
+		  },
+		  EVENTS: {
+			    HEADLINE: 'Events',
+			    TITLE_EVENT: 'Title',
+			    BUTTON_VIEW: 'View',
+			    BUTTON_EDIT: 'Edit',
+			    BUTTON_ADD_STUD: 'Add students to events',
+			    BUTTON_DELETE: 'Delete',
+			    BUTTON_ADD_EVENT: 'New event',
+			},
+			CALENDAR: {
+			    HEADLINE: 'Your calendar',
+			    CAL_LAST_MONTH: 'Last month',
+			    CAL_TODAY: 'Today',
+			    CAL_NEXT_MONTH: 'Next month',
+			    CAL_YEAR: 'Year',
+			    CAL_MONTH: 'Month',
+			    CAL_WEEK: 'Week',
+			    CAL_DAY: 'Day',
+			},
 		  NAMESPACE: {
 		    PARAGRAPH: 'And it comes with awesome features!'
 		  }
@@ -45,7 +83,26 @@ var translationsDE = {
 			  EVENT_ENDDATE: 'Enddatum',
 			  NEWS: 'Nachrichten',
 			  VIEW: 'Mehr'
-		  },  
+		  },
+		  EVENTS: {
+			    HEADLINE: 'Ereignisse',
+			    TITLE_EVENT: 'Name',
+			    BUTTON_VIEW: 'Einzelheiten',
+			    BUTTON_EDIT: 'Bearbeiten',
+			    BUTTON_ADD_STUD: 'Personen zu Ereignissen hinzufügen',
+			    BUTTON_DELETE: 'Löschen',
+			    BUTTON_ADD_EVENT: 'Neues Ereigniss',
+			},
+			CALENDAR: {
+			    HEADLINE: 'Ihr kalendar',
+			    CAL_LAST_MONTH: 'Lezter Monat',
+			    CAL_TODAY: 'Heute',
+			    CAL_NEXT_MONTH: 'Nächster Monat',
+			    CAL_YEAR: 'Jahr',
+			    CAL_MONTH: 'Monat',
+			    CAL_WEEK: 'Woche',
+			    CAL_DAY: 'Tag',
+			},
 		  NAMESPACE: {
 		    PARAGRAPH: 'And it comes with awesome features!'
 		  }
@@ -113,18 +170,36 @@ app.config(function($routeProvider) {
 
 }).controller('navigation',
 
-function($rootScope, $http, $location, $route,$translate,$scope,$cookies,$log) {
+function($rootScope, $http, $location, $route,$translate,$scope,$cookies,$log,UserConfigurationService) {
 
 	var self = this;
 
 	self.tab = function(route) {
 		return $route.current && route === $route.current.controller;
 	};
-
+	
 	$http.get('user').then(function(response) {
 		if (response.data.name) {
 			$rootScope.authenticated = true;
 			$rootScope.username = response.data.name;
+			UserConfigurationService.query({username: $rootScope.username}).$promise.then(S,E);
+			  function S(response) {
+				  var uc = response;
+				  $rootScope.userconfiguration = uc[0];
+				  if($rootScope.userconfiguration.preferedlanguage === 1) 
+				  {	
+					  $log.debug('BS');
+					  $rootScope.changeLanguage('bs');
+				  }
+				  if($rootScope.userconfiguration.preferedlanguage === 2)
+					  $rootScope.changeLanguage('en');
+				  if($rootScope.userconfiguration.preferedlanguage === 3)
+					  $rootScope.changeLanguage('de');
+				  $log.debug($scope.userconfiguration);
+			  };
+			  function E(response)  {
+				  $log.debug(response);
+			  };  
 		} else {
 			$rootScope.authenticated = false;
 		}
@@ -132,7 +207,7 @@ function($rootScope, $http, $location, $route,$translate,$scope,$cookies,$log) {
 		$rootScope.authenticated = false;
 	});
 	
-    $scope.changeLanguage = function (langKey) {
+    $rootScope.changeLanguage = function (langKey) {
         $translate.use(langKey);
       };
       
@@ -286,7 +361,7 @@ app.controller('StudentListCtrl',  function($scope, $window, StudentsService, St
     $scope.student = StudentService.show({id: $routeParams.id});
 
 });
-app.controller('EventListCtrl',  function($scope, $window, EventsService, StudevesService, EventService, $location,$log,$rootScope) {
+app.controller('EventListCtrl',  function($scope, $window, EventsService, StudevesService, EventService, $location,$log,$rootScope,$translate) {
 	// init function to grab events
 	$scope.init = function() {
 		// Two queries, one for number of events, with one parameter
@@ -627,7 +702,7 @@ app.controller('EventListCtrl',  function($scope, $window, EventsService, Studev
 					    };
 				 $scope.searchbox = {
 						 template:'partials/searchbox.tpl.html',
-						 parentdiv: 'location',
+						 parentdiv: 'editlocation',
 				          events:{
 				            places_changed: function (searchBox) {
 				            	var result = searchBox.getPlaces();
@@ -820,7 +895,7 @@ $scope.selectedType = 'Else';
   };
 
 });
-app.controller('CalendarCtrl',  function($scope, $window, $log,$routeParams, StudentService, EventsService, StudevesService, EventService, $location,$rootScope) {
+app.controller('CalendarCtrl',  function($scope, $window, $log,$routeParams, StudentService, EventsService, StudevesService, EventService, $location,$rootScope, $translate) {
     $scope.calendarView = 'month';
     $scope.calendarDate = new Date();
     $scope.CalendarEvents = [];
@@ -903,7 +978,7 @@ app.controller('CalendarCtrl',  function($scope, $window, $log,$routeParams, Stu
     };
 
 });
-app.controller('HomeCtrl',  function($scope, $window, EventsService, StudevesService, EventService, $location,$log,$rootScope,$translate) {
+app.controller('HomeCtrl',  function($scope, $window, EventsService, StudevesService, EventService, $location,$log,$rootScope) {
 	$scope.init = function() {
 		  StudevesService.query({username: $rootScope.username}).$promise.then(S,E);
 		  function S(response) {

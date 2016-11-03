@@ -22,12 +22,13 @@
 					ng-model="event.name" />
 			</div>
 		</div>
-		<label class="control-label">Current location:</label> <br>
+
 		<div class="well well-lg">
+			<label class="control-label">Current location: </label>{{event.location}}
 			<div class="control-group">
-				<label class="control-label" for="inputName">Location of
-					event:</label>
-				<div class="controls" id="location"></div>
+				<label class="control-label" for="inputName"> New Location
+					of event:</label>
+				<div class="controls" id="editlocation"></div>
 			</div>
 			<br>
 			<script type="text/ng-template" id="searchbox.tpl.html">
